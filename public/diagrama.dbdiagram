@@ -1,0 +1,63 @@
+{
+  "version": "2.0.0",
+  "darkMode": true,
+  "gridEnabling": false,
+  "currentViewName": null,
+  "defaultView": {
+    "detailLevel": "All",
+    "tablePositions": [
+      {
+        "name": "Roles",
+        "schemaName": "public",
+        "x": 140.33156850246246,
+        "y": 991.5103391820601
+      },
+      {
+        "name": "Categorias",
+        "schemaName": "public",
+        "x": 1690.0046904164735,
+        "y": 786.8973784286694
+      },
+      {
+        "name": "Sucursales",
+        "schemaName": "public",
+        "x": 1205.4875440296255,
+        "y": 961.4692392035766
+      },
+      {
+        "name": "Usuarios",
+        "schemaName": "public",
+        "x": 135.62656191660633,
+        "y": 615.5812704637066
+      },
+      {
+        "name": "Empleados",
+        "schemaName": "public",
+        "x": 528.630714207825,
+        "y": 519.0102685860137
+      },
+      {
+        "name": "Turnos",
+        "schemaName": "public",
+        "x": 1299.5787195794983,
+        "y": 239.1545302299569
+      },
+      {
+        "name": "Ausencias",
+        "schemaName": "public",
+        "x": 531.6606957481687,
+        "y": 114.14145248155194
+      },
+      {
+        "name": "Cronogramas",
+        "schemaName": "public",
+        "x": 1233.5558051085754,
+        "y": 608.4730209840144
+      }
+    ],
+    "tableGroupCollapseStates": [],
+    "stickyNoteLayouts": [],
+    "referencePaths": []
+  },
+  "views": {}
+}

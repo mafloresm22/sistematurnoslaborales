@@ -1,0 +1,87 @@
+Table Roles {
+    idRol int [pk, increment]
+    nombreRol varchar(150) [not null, unique]
+    descripcionRol varchar(250) [not null]
+    created_at timestamp
+    updated_at timestamp
+}
+
+Table Categorias {
+    idCategorias int [pk, increment]
+    nombreCategorias varchar(150) [not null, unique]
+    created_at timestamp
+    updated_at timestamp
+}
+
+Table Sucursales {
+    idSucursales int [pk, increment]
+    nombreSucursales varchar(150) [not null]
+    direccionSucursales text [not null]
+    created_at timestamp
+    updated_at timestamp
+}
+
+Table Usuarios{
+    idUsuario int [pk, increment]
+    userUsuario varchar(150) [not null]
+    emailUsuario varchar(150) [not null]
+    passwordUsuario varchar(150) [not null]
+    rolid int [ref: > Roles.idRol]
+    created_at timestamp
+    updated_at timestamp
+}
+
+Table Empleados{
+    idEmpleados int [pk, increment]
+    nombreEmpleados varchar(150) [not null]
+    apellidoEmpleados varchar(150) [not null]
+    tipodocumentoEmpleados enum('DNI', 'CI', 'RUC', 'CE', 'Pasaporte', 'Otro') [not null]
+    numerodocumentoEmpleados varchar(150) [not null]
+    telefonoEmpleados varchar(150) [not null]
+    direccionEmpleados text [not null]
+    profesionEmpleados varchar(150) [not null]
+    fechanacimientoEmpleados date
+    sexoEmpleados enum('Masculino', 'Femenino', 'Otros') [not null]
+    avatarEmpleados varchar(250) [null]   
+    estadoEmpleados enum('Activo','Inactivo', 'Suspendido') [not null, default: 'Activo']
+    usuarioid int [ref: > Usuarios.idUsuario]
+    created_at timestamp
+    updated_at timestamp
+}
+
+Table Turnos {
+  idTurno int [pk, increment]
+  nombreTurnos varchar(150) [not null]
+  horaInicio time [not null]
+  horaFin time [not null]
+  colorFondo varchar(10) [not null]
+  colorTexto varchar(10) [not null]
+  categoriaid int [ref: > Categorias.idCategorias]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table Ausencias{
+    idAusencias int [pk, increment]
+    fechaInicio date
+    fechaFin date
+    tipoAusencias enum('Vacaciones', 'Enfermedad', 'Permiso', 'Otros') [not null]
+    estadoAusencias enum('Aprobado','Rechazado', 'Pendiente') [not null, default: 'Pendiente']
+    observacionesAusencias text [null]
+    empleadoid int [ref: > Empleados.idEmpleados]
+    created_at timestamp
+    updated_at timestamp
+}
+
+Table Cronogramas{
+    idCronograma int [pk, increment]
+    empleadoid int [ref: > Empleados.idEmpleados]
+    sucursalesid int [ref: > Sucursales.idSucursales]
+    turnoid int [ref: > Turnos.idTurno]
+    fechaCronograma date
+    notaCronograma text [null]
+    created_at timestamp
+    updated_at timestamp
+}
+
+
