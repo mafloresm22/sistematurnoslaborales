@@ -7,59 +7,63 @@ use Illuminate\Http\Request;
 
 class SucursalesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $sucursales = Sucursales::orderBy('idSucursales', 'asc')->paginate(10);
+        return view('sucursales.index', compact('sucursales'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nombreSucursales' => 'required|string|max:150|unique:sucursales,nombreSucursales',
+            'direccionSucursales' => 'required|string|max:150|unique:sucursales,direccionSucursales',
+        ], [
+            'nombreSucursales.required' => 'El nombre de la sucursal es obligatorio.',
+            'nombreSucursales.unique'   => 'Ya existe una sucursal con ese nombre.',
+            'nombreSucursales.max'      => 'El nombre no puede superar los 150 caracteres.',
+            'direccionSucursales.required' => 'La dirección de la sucursal es obligatoria.',
+            'direccionSucursales.unique'   => 'Ya existe una sucursal con esa dirección.',
+            'direccionSucursales.max'      => 'La dirección no puede superar los 150 caracteres.',
+        ]);
+
+        Sucursales::create([
+            'nombreSucursales' => $request->nombreSucursales,
+            'direccionSucursales' => $request->direccionSucursales,
+        ]);
+
+        return redirect()->route('sucursales.index')->with('success', 'Sucursal creada exitosamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Sucursales $sucursales)
+    public function update(Request $request, $idSucursales)
     {
-        //
+        $sucursales = Sucursales::findOrFail($idSucursales);
+
+        $request->validate([
+            'nombreSucursales' => 'required|string|max:150|unique:sucursales,nombreSucursales,' . $idSucursales . ',idSucursales',
+            'direccionSucursales' => 'required|string|max:150|unique:sucursales,direccionSucursales,' . $idSucursales . ',idSucursales',
+        ], [
+            'nombreSucursales.required' => 'El nombre de la sucursal es obligatorio.',
+            'nombreSucursales.unique'   => 'Ya existe una sucursal con ese nombre.',
+            'nombreSucursales.max'      => 'El nombre no puede superar los 150 caracteres.',
+            'direccionSucursales.required' => 'La dirección de la sucursal es obligatoria.',
+            'direccionSucursales.unique'   => 'Ya existe una sucursal con esa dirección.',
+            'direccionSucursales.max'      => 'La dirección no puede superar los 150 caracteres.',
+        ]);
+
+        $sucursales->update([
+            'nombreSucursales' => $request->nombreSucursales,
+            'direccionSucursales' => $request->direccionSucursales,
+        ]);
+
+        return redirect()->route('sucursales.index')->with('success', 'Sucursal actualizada exitosamente.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Sucursales $sucursales)
+    public function destroy($idSucursales)
     {
-        //
-    }
+        $sucursales = Sucursales::findOrFail($idSucursales);
+        $sucursales->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Sucursales $sucursales)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Sucursales $sucursales)
-    {
-        //
+        return redirect()->route('sucursales.index')->with('success', 'Sucursal eliminada exitosamente.');
     }
 }

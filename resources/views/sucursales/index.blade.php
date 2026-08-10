@@ -4,13 +4,13 @@
          <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                <div class="header-title">
-                  <h4 class="card-title">Categorías</h4>
+                  <h4 class="card-title">Sucursales</h4>
                </div>
-               <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCreateCategoria">
+               <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCreateSucursales">
                   <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
                      <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  Nueva Categoría
+                  Nueva Sucursal
                </button>
             </div>
             <div class="card-body px-0">
@@ -30,30 +30,33 @@
                @endif
 
                <div class="table-responsive">
-                  <table id="tabla-categorias" class="table table-striped" role="grid">
+                  <table id="tabla-sucursales" class="table table-striped" role="grid">
                      <thead>
                         <tr class="ligth">
                            <th>#</th>
-                           <th>Nombre de Categoría</th>
+                           <th>Sucursales</th>
+                           <th>Direcciones</th>
                            <th>Fecha de Creación</th>
                            <th style="min-width: 120px">Acciones</th>
                         </tr>
                      </thead>
                      <tbody>
-                        @forelse($categorias as $categoria)
+                        @foreach($sucursales as $sucursal)
                            <tr>
                               <td>{{ $loop->iteration }}</td>
-                              <td>{{ $categoria->nombreCategorias }}</td>
-                              <td>{{ $categoria->created_at ? $categoria->created_at->format('d/m/Y') : '—' }}</td>
+                              <td>{{ $sucursal->nombreSucursales }}</td>
+                              <td>{{ $sucursal->direccionSucursales }}</td>
+                              <td>{{ $sucursal->created_at ? $sucursal->created_at->format('d/m/Y') : '—' }}</td>
                               <td>
                                  <div class="d-flex align-items-center gap-2">
                                     {{-- Editar --}}
                                     <button type="button"
                                        class="btn btn-sm btn-icon btn-warning btn-editar"
-                                       data-id-categorias="{{ $categoria->idCategorias }}"
-                                       data-nombre-categorias="{{ $categoria->nombreCategorias }}"
+                                       data-id-sucursales="{{ $sucursal->idSucursales }}"
+                                       data-nombre-sucursales="{{ $sucursal->nombreSucursales }}"
+                                       data-direccion-sucursales="{{ $sucursal->direccionSucursales }}"
                                        data-bs-toggle="modal"
-                                       data-bs-target="#modalEditCategoria"
+                                       data-bs-target="#modalEditSucursal"
                                        title="Editar">
                                        <span class="btn-inner">
                                           <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -61,12 +64,11 @@
                                              <path fill-rule="evenodd" clip-rule="evenodd" d="M8.82812 10.921L16.3011 3.44799C17.2321 2.51799 18.7411 2.51799 19.6721 3.44799L20.8891 4.66499C21.8201 5.59599 21.8201 7.10599 20.8891 8.03599L13.3801 15.545C12.9731 15.952 12.4211 16.181 11.8451 16.181H8.09912L8.19312 12.401C8.20712 11.845 8.43412 11.315 8.82812 10.921Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                              <path d="M15.1655 4.60254L19.7315 9.16854" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                           </svg>
-                                          Editar
                                        </span>
                                     </button>
 
                                     {{-- Eliminar --}}
-                                    <form action="{{ route('categorias.destroy', $categoria->idCategorias) }}" method="POST" class="form-eliminar">
+                                    <form action="{{ route('sucursales.destroy', $sucursal->idSucursales) }}" method="POST" class="form-eliminar">
                                        @csrf
                                        @method('DELETE')
                                        <button type="submit" class="btn btn-sm btn-icon btn-danger" title="Eliminar">
@@ -77,25 +79,20 @@
                                                 <path d="M17.4406 6.23973C16.6556 6.23973 15.9796 5.68473 15.8256 4.91573L15.5826 3.69973C15.4326 3.13873 14.9246 2.75073 14.3456 2.75073H10.1126C9.53358 2.75073 9.02558 3.13873 8.87558 3.69973L8.63258 4.91573C8.47858 5.68473 7.80258 6.23973 7.01758 6.23973" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                              </svg>
                                           </span>
-                                          Eliminar
                                        </button>
                                     </form>
                                  </div>
                               </td>
                            </tr>
-                        @empty
-                           <tr>
-                              <td colspan="4" class="text-center py-4 text-muted">No hay categorías registradas.</td>
-                           </tr>
-                        @endforelse
+                        @endforeach
                      </tbody>
                   </table>
                </div>
 
                {{-- Paginación --}}
-               @if($categorias->hasPages())
+               @if($sucursales->hasPages())
                   <div class="d-flex justify-content-center mt-3">
-                     {{ $categorias->links() }}
+                     {{ $sucursales->links() }}
                   </div>
                @endif
 
@@ -105,20 +102,22 @@
    </div>
 
    {{-- Modales --}}
-   @include('categorias.modal_create')
-   @include('categorias.modal_edit')
+   @include('sucursales.modal_create')
+   @include('sucursales.modal_edit')
 
    @push('scripts')
    <script>
       // Cargar datos en el modal de edicion
       document.querySelectorAll('.btn-editar').forEach(function (btn) {
          btn.addEventListener('click', function () {
-            const idCategorias = this.dataset.idCategorias;
-            const nombre = this.dataset.nombreCategorias;
-            const form = document.getElementById('formEditCategoria');
+            const idSucursales = this.dataset.idSucursales;
+            const nombre = this.dataset.nombreSucursales;
+            const direccion = this.dataset.direccionSucursales;
+            const form = document.getElementById('formEditSucursal');
 
-            form.action = `/categorias/${idCategorias}`;
-            document.getElementById('edit_nombreCategorias').value = nombre;
+            form.action = `/sucursales/${idSucursales}`;
+            document.getElementById('edit_nombreSucursales').value = nombre;
+            document.getElementById('edit_direccionSucursales').value = direccion;
          });
       });
 
@@ -141,6 +140,109 @@
                }
             });
          });
+      });
+
+      // Inicializar DataTable en español
+      $(document).ready(function() {
+         $('#tabla-sucursales').DataTable({
+            language: {
+               url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
+            }
+         });
+      });
+
+      // --- LÓGICA DE UBIGEO DESDE LA API (.env) PARA MODAL CREATE ---
+      const API_DEPARTAMENTOS = "{{ env('UBIGEO_DEPARTAMENTOS_URL') }}";
+      const API_PROVINCIAS = "{{ env('UBIGEO_PROVINCIAS_URL') }}";
+      const API_DISTRITOS = "{{ env('UBIGEO_DISTRITOS_URL') }}";
+
+      let departamentosData = [];
+      let provinciasData = {};
+      let distritosData = {};
+
+      function cargarUbigeosAPI() {
+          $.when(
+              $.getJSON(API_DEPARTAMENTOS),
+              $.getJSON(API_PROVINCIAS),
+              $.getJSON(API_DISTRITOS)
+          ).done(function(depRes, provRes, distRes) {
+              departamentosData = depRes[0];
+              provinciasData = provRes[0];
+              distritosData = distRes[0];
+
+              let $dep = $('#selDepartamento');
+              $dep.empty().append('<option value="">Seleccione...</option>');
+              departamentosData.forEach(function(dep) {
+                  $dep.append(`<option value="${dep.id_ubigeo}">${dep.nombre_ubigeo}</option>`);
+              });
+          }).fail(function(err) {
+              console.error("Error al cargar ubigeos desde la API:", err);
+          });
+      }
+
+      function actualizarDireccionOculta() {
+          let dep = $('#selDepartamento option:selected').text();
+          let prov = $('#selProvincia option:selected').text();
+          let dist = $('#selDistrito option:selected').text();
+          let det = $('#direccionDetalle').val().trim();
+          
+          if($('#selDepartamento').val() && $('#selProvincia').val() && $('#selDistrito').val() && det) {
+              let fullAddress = `Peru / ${dep} / ${prov} / ${dist} - ${det}`;
+              $('#direccionSucursales').val(fullAddress);
+          } else {
+              $('#direccionSucursales').val('');
+          }
+      }
+
+      $(document).ready(function() {
+          cargarUbigeosAPI();
+
+          $('#selDepartamento').on('change', function() {
+              let depId = $(this).val();
+              let $prov = $('#selProvincia');
+              let $dist = $('#selDistrito');
+
+              $prov.empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
+              $dist.empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
+
+              if (depId && provinciasData[depId]) {
+                  provinciasData[depId].forEach(function(prov) {
+                      $prov.append(`<option value="${prov.id_ubigeo}">${prov.nombre_ubigeo}</option>`);
+                  });
+                  $prov.prop('disabled', false);
+              }
+              actualizarDireccionOculta();
+          });
+
+          $('#selProvincia').on('change', function() {
+              let provId = $(this).val();
+              let $dist = $('#selDistrito');
+
+              $dist.empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
+
+              if (provId && distritosData[provId]) {
+                  distritosData[provId].forEach(function(dist) {
+                      $dist.append(`<option value="${dist.id_ubigeo}">${dist.nombre_ubigeo}</option>`);
+                  });
+                  $dist.prop('disabled', false);
+              }
+              actualizarDireccionOculta();
+          });
+
+          $('#selDistrito').on('change', function() {
+              actualizarDireccionOculta();
+          });
+
+          $('#direccionDetalle').on('input', function() {
+              actualizarDireccionOculta();
+          });
+
+          $('#modalCreateSucursales').on('hidden.bs.modal', function () {
+              $(this).find('form')[0].reset();
+              $('#selProvincia').empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
+              $('#selDistrito').empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
+              $('#direccionSucursales').val('');
+          });
       });
    </script>
    @endpush
