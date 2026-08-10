@@ -151,7 +151,7 @@
          });
       });
 
-      // --- LÓGICA DE UBIGEO DESDE LA API (.env) PARA MODAL CREATE ---
+      // --- LÓGICA DE UBIGEO DESDE LA API ---
       const API_DEPARTAMENTOS = "{{ env('UBIGEO_DEPARTAMENTOS_URL') }}";
       const API_PROVINCIAS = "{{ env('UBIGEO_PROVINCIAS_URL') }}";
       const API_DISTRITOS = "{{ env('UBIGEO_DISTRITOS_URL') }}";
