@@ -9,6 +9,8 @@ class Sucursales extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'idSucursales';
+
     protected $fillable = [
         'nombreSucursales',
         'direccionSucursales'

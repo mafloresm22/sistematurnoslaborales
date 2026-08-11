@@ -5,7 +5,7 @@
             <h5 class="modal-title" id="modalEditCategoriaLabel">Editar Categoría</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
          </div>
-         <form id="formEditCategoria" method="POST" action="">
+         <form id="formEditCategoria" method="POST">
             @csrf
             @method('PUT')
             <div class="modal-body">

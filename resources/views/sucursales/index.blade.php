@@ -56,7 +56,7 @@
                                        data-nombre-sucursales="{{ $sucursal->nombreSucursales }}"
                                        data-direccion-sucursales="{{ $sucursal->direccionSucursales }}"
                                        data-bs-toggle="modal"
-                                       data-bs-target="#modalEditSucursal"
+                                       data-bs-target="#modalEditSucursales"
                                        title="Editar">
                                        <span class="btn-inner">
                                           <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,7 +71,7 @@
                                     <form action="{{ route('sucursales.destroy', $sucursal->idSucursales) }}" method="POST" class="form-eliminar">
                                        @csrf
                                        @method('DELETE')
-                                       <button type="submit" class="btn btn-sm btn-icon btn-danger" title="Eliminar">
+                                       <button type="button" class="btn btn-sm btn-icon btn-danger btn-eliminar" title="Eliminar">
                                           <span class="btn-inner">
                                              <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M19.3248 9.46826C19.3248 9.46826 18.7818 16.2033 18.4668 19.0403C18.3168 20.3953 17.4798 21.1893 16.1088 21.2143C13.4998 21.2613 10.8878 21.2643 8.27979 21.2093C6.96079 21.1823 6.13779 20.3783 5.99079 19.0473C5.67379 16.1853 5.13379 9.46826 5.13379 9.46826" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -106,97 +106,175 @@
    @include('sucursales.modal_edit')
 
    @push('scripts')
-   <script>
-      // Cargar datos en el modal de edicion
-      document.querySelectorAll('.btn-editar').forEach(function (btn) {
-         btn.addEventListener('click', function () {
-            const idSucursales = this.dataset.idSucursales;
-            const nombre = this.dataset.nombreSucursales;
-            const direccion = this.dataset.direccionSucursales;
-            const form = document.getElementById('formEditSucursal');
+    <script>
+       // --- LÓGICA DE UBIGEO DESDE LA API ---
+       const API_DEPARTAMENTOS = "{{ env('UBIGEO_DEPARTAMENTOS_URL') }}";
+       const API_PROVINCIAS = "{{ env('UBIGEO_PROVINCIAS_URL') }}";
+       const API_DISTRITOS = "{{ env('UBIGEO_DISTRITOS_URL') }}";
 
-            form.action = `/sucursales/${idSucursales}`;
-            document.getElementById('edit_nombreSucursales').value = nombre;
-            document.getElementById('edit_direccionSucursales').value = direccion;
-         });
-      });
+       let departamentosData = [];
+       let provinciasData = {};
+       let distritosData = {};
 
-      // Eliminar
-      document.querySelectorAll('.form-eliminar').forEach(function (form) {
-         form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            Swal.fire({
-               title: '¿Estás seguro?',
-               text: "¡Esta acción no se puede deshacer!",
-               icon: 'warning',
-               showCancelButton: true,
-               confirmButtonColor: '#3085d6',
-               cancelButtonColor: '#d33',
-               confirmButtonText: 'Sí, eliminar',
-               cancelButtonText: 'Cancelar'
-            }).then((result) => {
-               if (result.isConfirmed) {
-                  this.submit();
-               }
-            });
-         });
-      });
+       function cargarUbigeosAPI() {
+           $.when(
+               $.getJSON(API_DEPARTAMENTOS),
+               $.getJSON(API_PROVINCIAS),
+               $.getJSON(API_DISTRITOS)
+           ).done(function(depRes, provRes, distRes) {
+               departamentosData = depRes[0];
+               provinciasData = provRes[0];
+               distritosData = distRes[0];
 
-      // Inicializar DataTable en español
-      $(document).ready(function() {
-         $('#tabla-sucursales').DataTable({
-            language: {
-               url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
-            }
-         });
-      });
+               let $dep = $('#selDepartamento');
+               $dep.empty().append('<option value="">Seleccione...</option>');
+               departamentosData.forEach(function(dep) {
+                   $dep.append(`<option value="${dep.id_ubigeo}">${dep.nombre_ubigeo}</option>`);
+               });
 
-      // --- LÓGICA DE UBIGEO DESDE LA API ---
-      const API_DEPARTAMENTOS = "{{ env('UBIGEO_DEPARTAMENTOS_URL') }}";
-      const API_PROVINCIAS = "{{ env('UBIGEO_PROVINCIAS_URL') }}";
-      const API_DISTRITOS = "{{ env('UBIGEO_DISTRITOS_URL') }}";
+               let $editDep = $('#edit_selDepartamento');
+               $editDep.empty().append('<option value="">Seleccione...</option>');
+               departamentosData.forEach(function(dep) {
+                   $editDep.append(`<option value="${dep.id_ubigeo}">${dep.nombre_ubigeo}</option>`);
+               });
+           }).fail(function(err) {
+               console.error("Error al cargar ubigeos desde la API:", err);
+           });
+       }
 
-      let departamentosData = [];
-      let provinciasData = {};
-      let distritosData = {};
+       function actualizarDireccionOculta() {
+           let dep = $('#selDepartamento option:selected').text();
+           let prov = $('#selProvincia option:selected').text();
+           let dist = $('#selDistrito option:selected').text();
+           let det = $('#direccionDetalle').val().trim();
+           
+           if($('#selDepartamento').val() && $('#selProvincia').val() && $('#selDistrito').val() && det) {
+               let fullAddress = `Peru / ${dep} / ${prov} / ${dist} - ${det}`;
+               $('#direccionSucursales').val(fullAddress);
+           } else {
+               $('#direccionSucursales').val('');
+           }
+       }
 
-      function cargarUbigeosAPI() {
-          $.when(
-              $.getJSON(API_DEPARTAMENTOS),
-              $.getJSON(API_PROVINCIAS),
-              $.getJSON(API_DISTRITOS)
-          ).done(function(depRes, provRes, distRes) {
-              departamentosData = depRes[0];
-              provinciasData = provRes[0];
-              distritosData = distRes[0];
+       function actualizarDireccionOcultaEdit() {
+           let dep = $('#edit_selDepartamento option:selected').text();
+           let prov = $('#edit_selProvincia option:selected').text();
+           let dist = $('#edit_selDistrito option:selected').text();
+           let det = $('#edit_direccionDetalle').val().trim();
+           
+           if($('#edit_selDepartamento').val() && $('#edit_selProvincia').val() && $('#edit_selDistrito').val() && det) {
+               let fullAddress = `Peru / ${dep} / ${prov} / ${dist} - ${det}`;
+               $('#edit_direccionSucursales').val(fullAddress);
+           } else {
+               $('#edit_direccionSucursales').val('');
+           }
+       }
 
-              let $dep = $('#selDepartamento');
-              $dep.empty().append('<option value="">Seleccione...</option>');
-              departamentosData.forEach(function(dep) {
-                  $dep.append(`<option value="${dep.id_ubigeo}">${dep.nombre_ubigeo}</option>`);
-              });
-          }).fail(function(err) {
-              console.error("Error al cargar ubigeos desde la API:", err);
+       // Cargar datos en el modal de edicion
+       document.querySelectorAll('.btn-editar').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+             const idSucursales = this.dataset.idSucursales;
+             const nombre = this.dataset.nombreSucursales;
+             const direccion = this.dataset.direccionSucursales || '';
+             const form = document.getElementById('formEditSucursales');
+
+             form.action = `{{ url('sucursales') }}/${idSucursales}`;
+             document.getElementById('edit_nombreSucursales').value = nombre;
+             document.getElementById('edit_direccionSucursales').value = direccion;
+
+             // Parsear la dirección guardada (Formato: "Peru / Departamento / Provincia / Distrito - Detalle")
+             let depNombre = '', provNombre = '', distNombre = '', detalle = direccion;
+
+             if (direccion.includes(' - ')) {
+                const parts = direccion.split(' - ');
+                detalle = parts.slice(1).join(' - ');
+                const ubigeoParts = parts[0].split('/').map(s => s.trim());
+                if (ubigeoParts.length >= 4) {
+                   depNombre = ubigeoParts[1];
+                   provNombre = ubigeoParts[2];
+                   distNombre = ubigeoParts[3];
+                }
+             }
+
+             document.getElementById('edit_direccionDetalle').value = detalle;
+
+             // Seleccionar Departamento
+             let depId = '';
+             if (depNombre && departamentosData) {
+                const depObj = departamentosData.find(d => d.nombre_ubigeo.toLowerCase() === depNombre.toLowerCase());
+                if (depObj) depId = depObj.id_ubigeo;
+             }
+
+             const $editDep = $('#edit_selDepartamento');
+             const $editProv = $('#edit_selProvincia');
+             const $editDist = $('#edit_selDistrito');
+
+             $editDep.val(depId);
+
+             // Llenar y seleccionar Provincia
+             $editProv.empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
+             $editDist.empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
+
+             if (depId && provinciasData[depId]) {
+                let provId = '';
+                provinciasData[depId].forEach(function(prov) {
+                   $editProv.append(`<option value="${prov.id_ubigeo}">${prov.nombre_ubigeo}</option>`);
+                   if (prov.nombre_ubigeo.toLowerCase() === provNombre.toLowerCase()) {
+                      provId = prov.id_ubigeo;
+                   }
+                });
+                $editProv.prop('disabled', false).val(provId);
+
+                // Llenar y seleccionar Distrito
+                if (provId && distritosData[provId]) {
+                   let distId = '';
+                   distritosData[provId].forEach(function(dist) {
+                      $editDist.append(`<option value="${dist.id_ubigeo}">${dist.nombre_ubigeo}</option>`);
+                      if (dist.nombre_ubigeo.toLowerCase() === distNombre.toLowerCase()) {
+                         distId = dist.id_ubigeo;
+                      }
+                   });
+                   $editDist.prop('disabled', false).val(distId);
+                }
+             }
+
+             actualizarDireccionOcultaEdit();
           });
-      }
+       });
 
-      function actualizarDireccionOculta() {
-          let dep = $('#selDepartamento option:selected').text();
-          let prov = $('#selProvincia option:selected').text();
-          let dist = $('#selDistrito option:selected').text();
-          let det = $('#direccionDetalle').val().trim();
-          
-          if($('#selDepartamento').val() && $('#selProvincia').val() && $('#selDistrito').val() && det) {
-              let fullAddress = `Peru / ${dep} / ${prov} / ${dist} - ${det}`;
-              $('#direccionSucursales').val(fullAddress);
-          } else {
-              $('#direccionSucursales').val('');
-          }
-      }
+       // Eliminar
+       document.querySelectorAll('.btn-eliminar').forEach(function (btn) {
+          btn.addEventListener('click', function (e) {
+             e.preventDefault();
+             const form = this.closest('form');
+             Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡Esta acción no se puede deshacer!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+             }).then((result) => {
+                if (result.isConfirmed) {
+                   form.submit();
+                }
+             });
+          });
+       });
 
-      $(document).ready(function() {
+       // Inicializar DataTable en español
+       $(document).ready(function() {
+          $('#tabla-sucursales').DataTable({
+             language: {
+                url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
+             }
+          });
+
           cargarUbigeosAPI();
 
+          // Listeners para modal Crear
           $('#selDepartamento').on('change', function() {
               let depId = $(this).val();
               let $prov = $('#selProvincia');
@@ -237,14 +315,62 @@
               actualizarDireccionOculta();
           });
 
+          // Listeners para modal Editar
+          $('#edit_selDepartamento').on('change', function() {
+              let depId = $(this).val();
+              let $prov = $('#edit_selProvincia');
+              let $dist = $('#edit_selDistrito');
+
+              $prov.empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
+              $dist.empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
+
+              if (depId && provinciasData[depId]) {
+                  provinciasData[depId].forEach(function(prov) {
+                      $prov.append(`<option value="${prov.id_ubigeo}">${prov.nombre_ubigeo}</option>`);
+                  });
+                  $prov.prop('disabled', false);
+              }
+              actualizarDireccionOcultaEdit();
+          });
+
+          $('#edit_selProvincia').on('change', function() {
+              let provId = $(this).val();
+              let $dist = $('#edit_selDistrito');
+
+              $dist.empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
+
+              if (provId && distritosData[provId]) {
+                  distritosData[provId].forEach(function(dist) {
+                      $dist.append(`<option value="${dist.id_ubigeo}">${dist.nombre_ubigeo}</option>`);
+                  });
+                  $dist.prop('disabled', false);
+              }
+              actualizarDireccionOcultaEdit();
+          });
+
+          $('#edit_selDistrito').on('change', function() {
+              actualizarDireccionOcultaEdit();
+          });
+
+          $('#edit_direccionDetalle').on('input', function() {
+              actualizarDireccionOcultaEdit();
+          });
+
           $('#modalCreateSucursales').on('hidden.bs.modal', function () {
               $(this).find('form')[0].reset();
               $('#selProvincia').empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
               $('#selDistrito').empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
               $('#direccionSucursales').val('');
           });
-      });
-   </script>
-   @endpush
+
+          $('#modalEditSucursales').on('hidden.bs.modal', function () {
+              $(this).find('form')[0].reset();
+              $('#edit_selProvincia').empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
+              $('#edit_selDistrito').empty().append('<option value="">Seleccione...</option>').prop('disabled', true);
+              $('#edit_direccionSucursales').val('');
+          });
+       });
+    </script>
+    @endpush
 
 </x-app-layout>
