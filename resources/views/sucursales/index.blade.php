@@ -88,14 +88,6 @@
                      </tbody>
                   </table>
                </div>
-
-               {{-- Paginación --}}
-               @if($sucursales->hasPages())
-                  <div class="d-flex justify-content-center mt-3">
-                     {{ $sucursales->links() }}
-                  </div>
-               @endif
-
             </div>
          </div>
       </div>

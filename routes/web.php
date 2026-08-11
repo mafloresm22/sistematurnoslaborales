@@ -8,6 +8,7 @@ use App\Http\Controllers\Security\PermissionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SucursalesController;
 use App\Http\Controllers\CategoriasController;
+use App\Http\Controllers\EmpleadosController;
 use Illuminate\Support\Facades\Artisan;
 // Packages
 use Illuminate\Support\Facades\Route;
@@ -76,6 +77,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/sucursales', [SucursalesController::class, 'store'])->name('sucursales.store');
     Route::put('/sucursales/{idSucursales}', [SucursalesController::class, 'update'])->name('sucursales.update');
     Route::delete('/sucursales/{idSucursales}', [SucursalesController::class, 'destroy'])->name('sucursales.destroy');
+
+    // Empleados Module
+    Route::get('/empleados', [EmpleadosController::class, 'index'])->name('empleados.index');
+    Route::post('/empleados', [EmpleadosController::class, 'store'])->name('empleados.store');
+    Route::get('/empleados/show/{idEmpleados}', [EmpleadosController::class, 'show'])->name('empleados.show');
+    Route::put('/empleados/{idEmpleados}', [EmpleadosController::class, 'update'])->name('empleados.update');
+    Route::delete('/empleados/{idEmpleados}', [EmpleadosController::class, 'destroy'])->name('empleados.destroy');
 });
 
 //App Details Page => 'Dashboard'], function() {

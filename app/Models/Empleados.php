@@ -9,6 +9,8 @@ class Empleados extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'idEmpleados';
+
     protected $fillable = [
         'nombreEmpleados',
         'apellidoEmpleados',
