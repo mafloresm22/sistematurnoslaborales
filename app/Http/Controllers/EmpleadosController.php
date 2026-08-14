@@ -28,13 +28,13 @@ class EmpleadosController extends Controller
         $validatedData = $request->validate([
             'nombreEmpleados'          => 'required|string|max:150',
             'apellidoEmpleados'        => 'required|string|max:150',
-            'numerodocumentoEmpleados' => 'required|string|max:12',
-            'correoEmpleados'          => 'required|email|max:150|unique:users,email',
-            'telefonoEmpleados'        => 'nullable|string|max:15',
+            'numerodocumentoEmpleados' => 'required|string|max:20',
+            'correoEmpleados'          => 'nullable|email|max:150|unique:users,email',
+            'telefonoEmpleados'        => 'nullable|string|max:9',
             'fechanacimientoEmpleados' => 'required|date',
             'sexoEmpleados'            => 'required|in:Masculino,Femenino,Otros',
             'profesionEmpleados'       => 'required|string|max:150',
-            'direccionEmpleados'       => 'required|string|max:150',
+            'direccionEmpleados'       => 'nullable|string|max:150',
             'avatarEmpleados'          => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
@@ -44,7 +44,11 @@ class EmpleadosController extends Controller
                 $file = $request->file('avatarEmpleados');
                 $filename = time() . '_' . Str::slug($validatedData['nombreEmpleados']) . '.' . $file->getClientOriginalExtension();
                 $path = $file->storeAs('empleados', $filename, 's3');
-                $avatarPath = Storage::disk('s3')->url($path);
+
+                // Construir la URL pública de Supabase Storage
+                $bucket = config('filesystems.disks.s3.bucket');
+                $baseUrl = rtrim(config('filesystems.disks.s3.url'), '/');
+                $avatarPath = "{$baseUrl}/{$bucket}/{$path}";
             } catch (\Exception $e) {
                 return redirect()->back()
                     ->withInput()
@@ -76,8 +80,8 @@ class EmpleadosController extends Controller
                 'first_name'   => $validatedData['nombreEmpleados'],
                 'last_name'    => $validatedData['apellidoEmpleados'],
                 'username'     => $username,
-                'email'        => $validatedData['correoEmpleados'],
-                'phone_number' => $validatedData['telefonoEmpleados'] ?? null,
+                'email'        => !empty($validatedData['correoEmpleados']) ? $validatedData['correoEmpleados'] : 'Ninguno',
+                'phone_number' => !empty($validatedData['telefonoEmpleados']) ? $validatedData['telefonoEmpleados'] : 'Ninguno',
                 'user_type'    => 'user',
                 'status'       => 'active',
                 'password'     => Hash::make($validatedData['numerodocumentoEmpleados']),
@@ -89,8 +93,8 @@ class EmpleadosController extends Controller
                 'apellidoEmpleados'        => $validatedData['apellidoEmpleados'],
                 'tipodocumentoEmpleados'   => $tipoDoc,
                 'numerodocumentoEmpleados' => $validatedData['numerodocumentoEmpleados'],
-                'telefonoEmpleados'        => $validatedData['telefonoEmpleados'] ?? null,
-                'direccionEmpleados'       => $validatedData['direccionEmpleados'],
+                'telefonoEmpleados'        => !empty($validatedData['telefonoEmpleados']) ? $validatedData['telefonoEmpleados'] : 'Ninguno',
+                'direccionEmpleados'       => !empty($validatedData['direccionEmpleados']) ? $validatedData['direccionEmpleados'] : 'Ninguno',
                 'profesionEmpleados'       => $validatedData['profesionEmpleados'],
                 'fechanacimientoEmpleados' => $validatedData['fechanacimientoEmpleados'],
                 'sexoEmpleados'            => $validatedData['sexoEmpleados'],

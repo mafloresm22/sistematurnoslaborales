@@ -30,6 +30,16 @@ class Empleados extends Model
         'fechanacimientoEmpleados' => 'date'
     ];
 
+    public function getAvatarEmpleadosAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+        $value = str_replace('.storage.supabase.co/storage/v1/s3/', '.supabase.co/storage/v1/object/public/', $value);
+
+        return $value;
+    }
+
     protected $append = ['nombreCompletoEmpleados'];
 
     /*

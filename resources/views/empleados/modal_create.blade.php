@@ -61,7 +61,7 @@
                             <div id="containerInputDoc" class="d-none">
                                 <div class="input-group">
                                     <input type="text" class="form-control border-primary" id="otroTipoDocumento" name="tipodocumentoEmpleados_otro" placeholder="Escriba tipo de doc...">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="cancelarOtroDoc()" title="Volver a la lista">
+                                    <button class="btn btn-outline-primary" type="button" onclick="cancelarOtroDoc()" title="Volver a la lista">
                                         <svg class="icon-32" width="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                            
                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C17.52 2 22 6.49 22 12L21.9962 12.2798C21.8478 17.6706 17.4264 22 12 22C6.49 22 2 17.52 2 12C2 6.49 6.49 2 12 2ZM8 13.98C8.3 14.27 8.77 14.27 9.06 13.97L12 11.02L14.94 13.97C15.23 14.27 15.71 14.27 16 13.98C16.3 13.68 16.3 13.21 16 12.92L12.53 9.43C12.39 9.29 12.2 9.21 12 9.21C11.8 9.21 11.61 9.29 11.47 9.43L8 12.92C7.85 13.06 7.78 13.25 7.78 13.44C7.78 13.64 7.85 13.83 8 13.98Z" fill="currentColor"></path>                            
                                         </svg>                        
@@ -72,16 +72,14 @@
 
                         <div class="col-md-6">
                             <label for="numerodocumentoEmpleados" class="form-label fw-semibold">Número de Documento <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="numerodocumentoEmpleados" name="numerodocumentoEmpleados" required inputmode="numeric" maxlength="12"
-                                   oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 12)">
-                            <div class="form-text" id="docHelpText">Entre 7 y 12 dígitos numéricos.</div>
+                            <input type="text" class="form-control" id="numerodocumentoEmpleados" name="numerodocumentoEmpleados" required inputmode="numeric" maxlength="20" disabled>
+                            <div class="form-text" id="docHelpText">Seleccione primero un tipo de documento.</div>
                         </div>
 
                         <div class="col-md-6">
                             <label for="telefonoEmpleados" class="form-label fw-semibold">Teléfono</label>
-                            <input type="tel" class="form-control" id="telefonoEmpleados" name="telefonoEmpleados" inputmode="numeric" maxlength="15"
-                                   oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 15)">
-                            <div class="form-text">Entre 7 y 15 dígitos.</div>
+                            <input type="tel" class="form-control" id="telefonoEmpleados" name="telefonoEmpleados" inputmode="numeric" maxlength="9"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9)">
                         </div>
 
                         <div class="col-md-6">
@@ -105,13 +103,13 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="correoEmpleados" class="form-label fw-semibold">Correo Electrónico <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" id="correoEmpleados" name="correoEmpleados" required maxlength="150">
+                            <label for="correoEmpleados" class="form-label fw-semibold">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="correoEmpleados" name="correoEmpleados" maxlength="150">
                         </div>
 
                         <div class="col-md-6">
-                            <label for="direccionEmpleados" class="form-label fw-semibold">Dirección de Domicilio <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="direccionEmpleados" name="direccionEmpleados" placeholder="Av. Principal 123..." required maxlength="150">
+                            <label for="direccionEmpleados" class="form-label fw-semibold">Dirección de Domicilio</label>
+                            <input type="text" class="form-control" id="direccionEmpleados" name="direccionEmpleados" placeholder="Av. Principal 123..." maxlength="150">
                         </div>
 
                     </div>
@@ -137,7 +135,7 @@
         cancelarOtroDoc();
     });
 
-    // 1. Previsualización de Foto
+    // Previsualización de Foto
     function previewImage(event) {
         const reader = new FileReader();
         reader.onload = function() {
@@ -148,31 +146,74 @@
         }
     }
 
-    // 2. Transición Select -> Input al elegir "Otro"
+    // Límites de caracteres según tipo de documento
+    const limitesDoc = {
+        'DNI':       { max: 8,  tipo: 'numeric',  texto: 'Exactamente 8 dígitos numéricos.' },
+        'RUC':       { max: 11, tipo: 'numeric',  texto: 'Exactamente 11 dígitos numéricos.' },
+        'CE':        { max: 12, tipo: 'text',     texto: 'Máximo 12 caracteres alfanuméricos.' },
+        'Pasaporte': { max: 12, tipo: 'text',     texto: 'Máximo 12 caracteres alfanuméricos.' },
+        'CI':        { max: 10, tipo: 'text',     texto: 'Máximo 10 caracteres alfanuméricos.' },
+        'Otro':      { max: 20, tipo: 'text',     texto: 'Máximo 20 caracteres alfanuméricos.' }
+    };
+
+    function aplicarLimiteDoc(tipoDoc) {
+        const input = document.getElementById('numerodocumentoEmpleados');
+        const helpText = document.getElementById('docHelpText');
+        const config = limitesDoc[tipoDoc] || limitesDoc['Otro'];
+
+        input.maxLength = config.max;
+        input.value = '';
+        input.disabled = false;
+
+        if (config.tipo === 'numeric') {
+            input.inputMode = 'numeric';
+            input.oninput = function() {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, config.max);
+            };
+        } else {
+            input.inputMode = 'text';
+            input.oninput = function() {
+                this.value = this.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, config.max);
+            };
+        }
+
+        helpText.textContent = config.texto;
+    }
+
+    // Transición Select -> Input al elegir "Otro"
     function checkTipoDoc(select) {
         if (select.value === 'Otro') {
             document.getElementById('containerSelectDoc').classList.add('d-none');
             document.getElementById('containerInputDoc').classList.remove('d-none');
             
-            // Desactivar select y activar input
             select.disabled = true;
             const inputOtro = document.getElementById('otroTipoDocumento');
             inputOtro.required = true;
             inputOtro.focus();
         }
+
+        // Aplicar límites según tipo seleccionado
+        aplicarLimiteDoc(select.value);
     }
 
-    // 3. Volver al Select
+    // Volver al Select
     function cancelarOtroDoc() {
         document.getElementById('containerInputDoc').classList.add('d-none');
         document.getElementById('containerSelectDoc').classList.remove('d-none');
         
         const select = document.getElementById('tipodocumentoEmpleados');
         const inputOtro = document.getElementById('otroTipoDocumento');
+        const inputDoc = document.getElementById('numerodocumentoEmpleados');
         
         select.disabled = false;
         select.value = '';
         inputOtro.required = false;
         inputOtro.value = '';
+
+        inputDoc.value = '';
+        inputDoc.disabled = true;
+        inputDoc.maxLength = 20;
+        inputDoc.oninput = null;
+        document.getElementById('docHelpText').textContent = 'Seleccione primero un tipo de documento.';
     }
 </script>

@@ -34,9 +34,10 @@
                      <thead>
                         <tr class="ligth">
                            <th>#</th>
-                           <th>Avatar</th>
+                           <th>Foto</th>
                            <th>Empleados</th>
                            <th>Número Documento</th>
+                           <th>Profesión</th>
                            <th>Telefono</th>
                            <th>Estado</th>
                            <th style="min-width: 120px">Acciones</th>
@@ -48,27 +49,43 @@
                               <td>{{ $loop->iteration }}</td>
                               <td>
                               @if($empleado->avatarEmpleados)
-                                 <img src="{{ $empleado->avatarEmpleados }}" class="avatar-sm" alt="">
+                                 <img src="{{ $empleado->avatarEmpleados }}" class="avatar-sm rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="">
                               @else
                                  <div class="avatar-sm bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white">
                                     <span>{{ strtoupper(substr($empleado->nombreEmpleados, 0, 1)) }}</span>
                                  </div>
                               @endif
-                           </td>
+                              </td>
                               <td>{{ $empleado->nombreEmpleados }} {{ $empleado->apellidoEmpleados }}</td>
                               <td>{{ $empleado->tipodocumentoEmpleados }} - {{ $empleado->numerodocumentoEmpleados }}</td>
+                              <td>{{ $empleado->profesionEmpleados }}</td>
                               <td>{{ $empleado->telefonoEmpleados }}</td>
-                              <td>{{ $empleado->estadoEmpleados }}</td>
+                              <td>
+                                 <span class="badge bg-{{ $empleado->estadoEmpleados == 'Activo' ? 'success' : ($empleado->estadoEmpleados == 'Inactivo' ? 'danger' : 'warning') }}">
+                                    {{ $empleado->estadoEmpleados }}
+                                 </span>
+                              </td>
                               <td>
                                  <div class="d-flex align-items-center gap-2">
                                     {{-- Editar --}}
-                                    <button type="button"
-                                       class="btn btn-sm btn-icon btn-warning btn-editar"
-                                       data-id-empleado="{{ $empleado->idEmpleados }}"
-                                       data-nombre-empleado="{{ $empleado->nombreEmpleados }}"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#modalEditEmpleados"
-                                       title="Editar">
+                                     <button type="button"
+                                        class="btn btn-sm btn-icon btn-warning btn-editar"
+                                        data-id-empleado="{{ $empleado->idEmpleados }}"
+                                        data-nombre="{{ $empleado->nombreEmpleados }}"
+                                        data-apellido="{{ $empleado->apellidoEmpleados }}"
+                                        data-tipodoc="{{ $empleado->tipodocumentoEmpleados }}"
+                                        data-numdoc="{{ $empleado->numerodocumentoEmpleados }}"
+                                        data-telefono="{{ $empleado->telefonoEmpleados }}"
+                                        data-fechanac="{{ $empleado->fechanacimientoEmpleados ? $empleado->fechanacimientoEmpleados->format('Y-m-d') : '' }}"
+                                        data-sexo="{{ $empleado->sexoEmpleados }}"
+                                        data-profesion="{{ $empleado->profesionEmpleados }}"
+                                        data-correo="{{ $empleado->usuario ? $empleado->usuario->email : '' }}"
+                                        data-direccion="{{ $empleado->direccionEmpleados }}"
+                                        data-estado="{{ $empleado->estadoEmpleados }}"
+                                        data-avatar="{{ $empleado->avatarEmpleados ? $empleado->avatarEmpleados : asset('images/avatars/Empleados.png') }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEditEmpleados"
+                                        title="Editar">
                                        <span class="btn-inner">
                                           <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                              <path d="M11.4925 2.78906H7.75349C4.67849 2.78906 2.75049 4.96606 2.75049 8.04806V16.3621C2.75049 19.4441 4.66949 21.6211 7.75349 21.6211H16.5775C19.6625 21.6211 21.5815 19.4441 21.5815 16.3621V12.3341" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -122,12 +139,36 @@
        // Cargar datos en el modal de edicion
        document.querySelectorAll('.btn-editar').forEach(function (btn) {
           btn.addEventListener('click', function () {
-             const idEmpleado = this.dataset.idEmpleado;
-             const nombre = this.dataset.nombreEmpleado;
+             const ds = this.dataset;
              const form = document.getElementById('formEditEmpleados');
 
-             form.action = `{{ url('empleados') }}/${idEmpleado}`;
-             document.getElementById('edit_nombreEmpleados').value = nombre;
+             form.action = `{{ url('empleados') }}/${ds.idEmpleado}`;
+             
+             document.getElementById('edit_nombreEmpleados').value = ds.nombre;
+             document.getElementById('edit_apellidoEmpleados').value = ds.apellido;
+             document.getElementById('edit_telefonoEmpleados').value = ds.telefono !== 'Ninguno' ? ds.telefono : '';
+             document.getElementById('edit_fechanacimientoEmpleados').value = ds.fechanac;
+             document.getElementById('edit_sexoEmpleados').value = ds.sexo;
+             document.getElementById('edit_profesionEmpleados').value = ds.profesion;
+             document.getElementById('edit_correoEmpleados').value = ds.correo !== 'Ninguno' ? ds.correo : '';
+             document.getElementById('edit_direccionEmpleados').value = ds.direccion !== 'Ninguno' ? ds.direccion : '';
+             document.getElementById('edit_avatarPreview').src = ds.avatar;
+
+             // Lógica del Select de Documento
+             const selectDoc = document.getElementById('edit_tipodocumentoEmpleados');
+             const inputOtro = document.getElementById('edit_otroTipoDocumento');
+             const docOptions = Array.from(selectDoc.options).map(o => o.value);
+             
+             if (docOptions.includes(ds.tipodoc)) {
+                 selectDoc.value = ds.tipodoc;
+                 editCheckTipoDoc(selectDoc);
+             } else {
+                 selectDoc.value = 'Otro';
+                 editCheckTipoDoc(selectDoc);
+                 inputOtro.value = ds.tipodoc;
+             }
+             
+             document.getElementById('edit_numerodocumentoEmpleados').value = ds.numdoc;
           });
        });
 
