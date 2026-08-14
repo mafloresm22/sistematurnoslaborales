@@ -48,7 +48,7 @@
                               <td>{{ $loop->iteration }}</td>
                               <td>
                               @if($empleado->avatarEmpleados)
-                                 <img src="{{ asset('storage/' . $empleado->avatarEmpleados) }}" class="avatar-sm" alt="">
+                                 <img src="{{ $empleado->avatarEmpleados }}" class="avatar-sm" alt="">
                               @else
                                  <div class="avatar-sm bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white">
                                     <span>{{ strtoupper(substr($empleado->nombreEmpleados, 0, 1)) }}</span>

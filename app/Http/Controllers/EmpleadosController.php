@@ -25,33 +25,45 @@ class EmpleadosController extends Controller
             $tipoDoc = $request->tipodocumentoEmpleados_otro ?? 'Otro';
         }
 
-        // 1. Añadida la validación del email único en la tabla users
         $validatedData = $request->validate([
             'nombreEmpleados'          => 'required|string|max:150',
             'apellidoEmpleados'        => 'required|string|max:150',
             'numerodocumentoEmpleados' => 'required|string|max:12',
-            'correoEmpleados'          => 'required|email|max:150|unique:users,email', // <-- Validación agregada
+            'correoEmpleados'          => 'required|email|max:150|unique:users,email',
             'telefonoEmpleados'        => 'nullable|string|max:15',
             'fechanacimientoEmpleados' => 'required|date',
             'sexoEmpleados'            => 'required|in:Masculino,Femenino,Otros',
             'profesionEmpleados'       => 'required|string|max:150',
             'direccionEmpleados'       => 'required|string|max:150',
-            'avatarEmpleados'          => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'avatarEmpleados'          => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
+
+        $avatarPath = null;
+        if ($request->hasFile('avatarEmpleados')) {
+            try {
+                $file = $request->file('avatarEmpleados');
+                $filename = time() . '_' . Str::slug($validatedData['nombreEmpleados']) . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('empleados', $filename, 's3');
+                $avatarPath = Storage::disk('s3')->url($path);
+            } catch (\Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Error al subir la imagen: ' . $e->getMessage());
+            }
+        }
 
         DB::beginTransaction();
 
         try {
-            // Lógica para generar el nombre de usuario
-            $primerNombre = trim(explode(' ', $request->nombreEmpleados)[0]);
-            $primerApellido = trim(explode(' ', $request->apellidoEmpleados)[0]);
-        
-            $baseUsername = Str::lower(
-                substr($primerNombre, 0, 2) . $primerApellido . substr($primerNombre, -1)
-            );
-            $baseUsername = Str::slug($baseUsername, ''); // Limpiar caracteres especiales / acentos
+            // Generar username único
+            $primerNombre = trim(explode(' ', $validatedData['nombreEmpleados'])[0]);
+            $primerApellido = trim(explode(' ', $validatedData['apellidoEmpleados'])[0]);
 
-            // Verificar que sea único el username
+            $baseUsername = Str::slug(
+                substr($primerNombre, 0, 2) . $primerApellido . substr($primerNombre, -1),
+                ''
+            );
+
             $username = $baseUsername;
             $counter = 1;
             while (User::where('username', $username)->exists()) {
@@ -59,36 +71,29 @@ class EmpleadosController extends Controller
                 $counter++;
             }
 
-            // 2. Crear el Registro de Usuario con el email guardado
+            // Crear Registro en la Tabla USERS
             $usuario = User::create([
-                'first_name' => $request->nombreEmpleados,
-                'last_name'  => $request->apellidoEmpleados,
-                'username'   => $username,
-                'email'      => $request->correoEmpleados, // <-- Guardado en la tabla USERS
-                'password'   => Hash::make($request->numerodocumentoEmpleados),
+                'first_name'   => $validatedData['nombreEmpleados'],
+                'last_name'    => $validatedData['apellidoEmpleados'],
+                'username'     => $username,
+                'email'        => $validatedData['correoEmpleados'],
+                'phone_number' => $validatedData['telefonoEmpleados'] ?? null,
+                'user_type'    => 'user',
+                'status'       => 'active',
+                'password'     => Hash::make($validatedData['numerodocumentoEmpleados']),
             ]);
 
-            // C. Procesamiento y Guardado de la Foto / Avatar
-            $avatarPath = null;
-
-            if ($request->hasFile('avatarEmpleados')) {
-                $file = $request->file('avatarEmpleados');
-                $filename = time() . '_' . Str::slug($request->nombreEmpleados) . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('empleados', $filename, 's3');
-                $avatarPath = Storage::disk('s3')->url($path);
-            }
-
-            // D. Crear el Registro de Empleado (Sin modificar sus columnas)
+            // Crear Registro en la Tabla EMPLEADOS
             Empleados::create([
-                'nombreEmpleados'          => $request->nombreEmpleados,
-                'apellidoEmpleados'        => $request->apellidoEmpleados,
+                'nombreEmpleados'          => $validatedData['nombreEmpleados'],
+                'apellidoEmpleados'        => $validatedData['apellidoEmpleados'],
                 'tipodocumentoEmpleados'   => $tipoDoc,
-                'numerodocumentoEmpleados' => $request->numerodocumentoEmpleados,
-                'telefonoEmpleados'        => $request->telefonoEmpleados,
-                'direccionEmpleados'       => $request->direccionEmpleados,
-                'profesionEmpleados'       => $request->profesionEmpleados,
-                'fechanacimientoEmpleados' => $request->fechanacimientoEmpleados,
-                'sexoEmpleados'            => $request->sexoEmpleados,
+                'numerodocumentoEmpleados' => $validatedData['numerodocumentoEmpleados'],
+                'telefonoEmpleados'        => $validatedData['telefonoEmpleados'] ?? null,
+                'direccionEmpleados'       => $validatedData['direccionEmpleados'],
+                'profesionEmpleados'       => $validatedData['profesionEmpleados'],
+                'fechanacimientoEmpleados' => $validatedData['fechanacimientoEmpleados'],
+                'sexoEmpleados'            => $validatedData['sexoEmpleados'],
                 'avatarEmpleados'          => $avatarPath,
                 'estadoEmpleados'          => 'Activo',
                 'usuarioid'                => $usuario->id,
@@ -97,14 +102,14 @@ class EmpleadosController extends Controller
             DB::commit();
 
             return redirect()->route('empleados.index')
-                ->with('success', "Empleado registrado correctamente. Usuario creado: {$username}");
+                ->with('success', "Empleado y usuario '{$username}' creados correctamente.");
 
         } catch (\Exception $e) {
             DB::rollBack();
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Ocurrió un error al registrar el empleado: ' . $e->getMessage());
+                ->with('error', 'Error en base de datos: ' . $e->getMessage());
         }
     }
 }
