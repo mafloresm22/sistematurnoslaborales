@@ -36,10 +36,8 @@
                            <th>#</th>
                            <th>Avatar</th>
                            <th>Empleados</th>
-                           <th>Tipo Documento</th>
                            <th>Número Documento</th>
                            <th>Telefono</th>
-                           <th>Profesion</th>
                            <th>Estado</th>
                            <th style="min-width: 120px">Acciones</th>
                         </tr>
@@ -58,10 +56,8 @@
                               @endif
                            </td>
                               <td>{{ $empleado->nombreEmpleados }} {{ $empleado->apellidoEmpleados }}</td>
-                              <td>{{ $empleado->tipodocumentoEmpleados }}</td>
-                              <td>{{ $empleado->numerodocumentoEmpleados }}</td>
+                              <td>{{ $empleado->tipodocumentoEmpleados }} - {{ $empleado->numerodocumentoEmpleados }}</td>
                               <td>{{ $empleado->telefonoEmpleados }}</td>
-                              <td>{{ $empleado->profesionEmpleados }}</td>
                               <td>{{ $empleado->estadoEmpleados }}</td>
                               <td>
                                  <div class="d-flex align-items-center gap-2">
