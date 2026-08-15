@@ -16,13 +16,26 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(UsersDataTable $dataTable)
+    public function index(Request $request)
     {
-        $pageTitle = trans('global-message.list_form_title',['form' => trans('users.title')] );
-        $auth_user = AuthHelper::authSession();
-        $assets = ['data-table'];
-        $headerAction = '<a href="'.route('users.create').'" class="btn btn-sm btn-primary" role="button">Add User</a>';
-        return $dataTable->render('global.datatable', compact('pageTitle','auth_user','assets', 'headerAction'));
+        $search = $request->input('search');
+
+        $query = User::orderBy('id', 'desc');
+
+        if ($search) {
+            $query->where('first_name', 'LIKE', "%{$search}%")
+                  ->orWhere('last_name', 'LIKE', "%{$search}%")
+                  ->orWhere('username', 'LIKE', "%{$search}%");
+        }
+
+        $usuarios = $query->paginate(9);
+
+        // Mantiene el parámetro de búsqueda en la paginación
+        if ($search) {
+            $usuarios->appends(['search' => $search]);
+        }
+
+        return view('usuarios.index', compact('usuarios', 'search'));
     }
 
     /**

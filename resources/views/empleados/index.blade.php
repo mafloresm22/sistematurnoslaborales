@@ -33,7 +33,6 @@
                   <table id="tabla-empleados" class="table table-striped" role="grid">
                      <thead>
                         <tr class="ligth">
-                           <th>#</th>
                            <th>Foto</th>
                            <th>Empleados</th>
                            <th>Número Documento</th>
@@ -46,7 +45,6 @@
                      <tbody>
                         @foreach($empleados as $empleado)
                            <tr>
-                              <td>{{ $loop->iteration }}</td>
                               <td>
                               @if($empleado->avatarEmpleados)
                                  <img src="{{ $empleado->avatarEmpleados }}" class="avatar-sm rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="">

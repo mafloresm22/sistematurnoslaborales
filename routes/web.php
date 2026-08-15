@@ -84,6 +84,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/empleados/show/{idEmpleados}', [EmpleadosController::class, 'show'])->name('empleados.show');
     Route::put('/empleados/{idEmpleados}', [EmpleadosController::class, 'update'])->name('empleados.update');
     Route::delete('/empleados/{idEmpleados}', [EmpleadosController::class, 'destroy'])->name('empleados.destroy');
+
+    // Usuarios Module
+    Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
+    Route::get('/usuarios/show/{idUsuarios}', [UserController::class, 'show'])->name('usuarios.show');
 });
 
 //App Details Page => 'Dashboard'], function() {
