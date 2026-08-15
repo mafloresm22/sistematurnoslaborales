@@ -109,7 +109,7 @@
 
                         <div class="col-md-6">
                             <label for="direccionEmpleados" class="form-label fw-semibold">Dirección de Domicilio</label>
-                            <input type="text" class="form-control" id="direccionEmpleados" name="direccionEmpleados" placeholder="Av. Principal 123..." maxlength="150">
+                            <input type="text" class="form-control" id="direccionEmpleados" name="direccionEmpleados" maxlength="150">
                         </div>
 
                     </div>
