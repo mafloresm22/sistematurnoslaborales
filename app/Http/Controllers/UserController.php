@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Helpers\AuthHelper;
 use Spatie\Permission\Models\Role;
 use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -173,5 +175,39 @@ class UserController extends Controller
 
         return redirect()->back()->with($status,$message);
 
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'password' => ['required', 'confirmed', Password::defaults()],
+        ], [
+            'password.required'  => 'La contraseña es obligatoria.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->back()->with('success', 'Contraseña actualizada exitosamente.');
+    }
+
+    public function cambiarRol(Request $request)
+    {
+        $request->validate([
+            'role'    => ['required', 'exists:roles,name'],
+            'user_id' => ['required', 'exists:users,id'],
+        ], [
+            'role.required' => 'El rol es obligatorio.',
+            'role.exists'   => 'El rol seleccionado no existe.',
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+        $user->syncRoles([$request->role]);
+
+        return redirect()->back()->with('success', 'Rol actualizado exitosamente.');
     }
 }

@@ -65,6 +65,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Users Module
     Route::resource('users', UserController::class);
+    Route::put('/reset-password', [UserController::class, 'resetPassword'])->name('reset-password');
+    Route::put('/cambiar-rol', [UserController::class, 'cambiarRol'])->name('cambiar-rol');
 
     // Categorias Module
     Route::get('/categorias', [CategoriasController::class, 'index'])->name('categorias.index');

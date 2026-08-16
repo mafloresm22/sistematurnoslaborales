@@ -38,7 +38,10 @@
                                </div>
                             </div>
                             <div class="d-flex justify-content-center">
-                               <button type="submit" class="btn btn-primary">{{ __('Ingresar') }}</button>
+                               <button type="submit" id="btnIngresar" class="btn btn-primary d-flex align-items-center gap-2">
+                                   <span id="btnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                   <span id="btnTexto">{{ __('Ingresar') }}</span>
+                               </button>
                             </div>
                          </form>
                       </div>
@@ -62,3 +65,15 @@
       </div>
    </section>
 </x-guest-layout>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function () {
+        const btn     = document.getElementById('btnIngresar');
+        const spinner = document.getElementById('btnSpinner');
+        const texto   = document.getElementById('btnTexto');
+
+        btn.disabled = true;
+        spinner.classList.remove('d-none');
+        texto.textContent = 'Procesando...';
+    });
+</script>

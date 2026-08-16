@@ -10,7 +10,7 @@
                         <form action="{{ route('usuarios.index') }}" method="GET" class="d-flex">
                             <input type="text" name="search" class="form-control me-2" placeholder="Buscar por nombre, apellido o usuario..." value="{{ request('search') }}">
                             <button class="btn btn-primary" type="submit">
-                                <i class="bi bi-search"></i> Buscar
+                                <i class="bi bi-search"></i>
                             </button>
                         </form>
                     </div>
@@ -22,11 +22,27 @@
                         @endphp
 
                         @forelse($listaUsuarios as $usuario)
+                        @php
+                            $esAdmin = $usuario->hasRole('admin') || $usuario->user_type === 'admin';
+                            $esMismo = $usuario->id === auth()->id();
+                        @endphp
                         <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="card shadow-sm border h-100">
+                            <div class="card shadow-sm h-100 {{ $esAdmin ? 'border-warning border-2' : 'border' }}">
+                                @if($esAdmin)
+                                    <div class="card-header py-1 px-3" style="background: linear-gradient(90deg, #f59e0b, #d97706); border-bottom: none;">
+                                        <small class="text-white fw-semibold">
+                                            <i class="bi bi-shield-fill-check me-1"></i> Administrador
+                                        </small>
+                                    </div>
+                                @endif
                                 <div class="card-body d-flex flex-column">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h5 class="card-title mb-0 fw-bold">{{ $usuario->first_name }} {{ $usuario->last_name }}</h5>
+                                        <h5 class="card-title mb-0 fw-bold">
+                                            {{ $usuario->first_name }} {{ $usuario->last_name }}
+                                            @if($esMismo)
+                                                <span class="badge bg-secondary ms-1" style="font-size: 0.65rem;">Tú</span>
+                                            @endif
+                                        </h5>
                                         <span class="badge bg-{{ $usuario->status == 'active' ? 'success' : 'danger' }}">
                                             {{ ucfirst($usuario->status) }}
                                         </span>
@@ -42,19 +58,23 @@
                                     </div>
                                     
                                     <div class="d-flex gap-2 mt-auto">
-                                        <button type="button" class="btn btn-sm btn-primary flex-fill" data-bs-toggle="modal" data-bs-target="#modalCambiarPassword" data-id="{{ $usuario->id }}" title="Cambiar Contraseña">
-                                            <svg width="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
-                                            </svg>
-                                            Contraseña
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-warning flex-fill" data-bs-toggle="modal" data-bs-target="#modalCambiarRol" data-id="{{ $usuario->id }}" title="Cambiar Rol">
-                                            <svg width="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                                <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </svg>
-                                            Rol
-                                        </button>
+                                        @if($esMismo)
+                                            <button class="btn btn-primary btn-sm flex-fill" disabled title="No puedes editar tu propio perfil">
+                                                <i class="bi bi-key"></i> Cambiar Clave
+                                            </button>
+                                            <button class="btn btn-sm btn-warning flex-fill" disabled title="No puedes editar tu propio perfil">
+                                                <i class="bi bi-person-gear"></i> Cambiar Rol
+                                            </button>
+                                        @else
+                                            <button class="btn btn-primary btn-sm" onclick="abrirModalReset('{{ $usuario->id }}')">
+                                                <i class="bi bi-key"></i>
+                                                Cambiar Clave
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-warning flex-fill" onclick="abrirModalCambiarRol('{{ $usuario->id }}', '{{ $usuario->first_name }} {{ $usuario->last_name }}', '{{ $esAdmin ? 'admin' : 'user' }}')" title="Cambiar Rol">
+                                                <i class="bi bi-person-gear"></i>
+                                                Cambiar Rol
+                                            </button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -75,4 +95,17 @@
             </div>
         </div>
     </div>
+    @include('usuarios.reset_password')
+    @include('usuarios.cambiar_rol')
+
+    <script>
+        function abrirModalReset(idUsuario) {
+            document.getElementById('reset_user_id').value = idUsuario;
+            document.getElementById('formResetPassword').reset();
+            document.getElementById('passwordMatchError').classList.add('d-none');
+            document.getElementById('password_confirmation').classList.remove('is-invalid');
+            var modal = new bootstrap.Modal(document.getElementById('modalResetPassword'));
+            modal.show();
+        }
+    </script>
 </x-app-layout>
