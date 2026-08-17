@@ -101,8 +101,18 @@ class TurnosController extends Controller
         return redirect()->route('turnos.index')
                         ->with('success', 'El turno se ha actualizado correctamente.');
     }
-    public function destroy(Turnos $turnos)
+
+    public function destroy($idTurno)
     {
-        //
+        try {
+            $turno = Turnos::findOrFail($idTurno);
+            $turno->delete();
+
+            return redirect()->route('turnos.index')
+                             ->with('success', 'El turno ha sido eliminado correctamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('turnos.index')
+                             ->with('error', 'No se pudo eliminar el turno porque está en uso o no existe.');
+        }
     }
 }

@@ -88,11 +88,16 @@
                                                     onclick="abrirModalEditarTurno({{ json_encode($turno) }})">
                                                 <i class="bi bi-pencil-square me-1"></i> Editar
                                             </button>
-                                            
+
                                             <button type="button" class="btn btn-danger btn-sm flex-fill fw-semibold" 
                                                     onclick="confirmarEliminarTurno('{{ $turno->idTurno }}', '{{ $turno->nombreTurnos }}')">
                                                 <i class="bi bi-trash me-1"></i> Eliminar
                                             </button>
+
+                                            <form id="form-delete-turno-{{ $turno->idTurno }}" action="{{ route('turnos.destroy', $turno->idTurno) }}" method="POST" class="d-none">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
