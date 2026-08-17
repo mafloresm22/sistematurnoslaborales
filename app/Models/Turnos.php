@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Turnos extends Model
 {
@@ -30,8 +31,14 @@ class Turnos extends Model
     */
     public function getDuracionTurnosAttribute()
     {
-        $horaInicio = Carbon::createFromFormat('H:i', $this->getRawOriginal('horaInicio'));
-        $horaFin = Carbon::createFromFormat('H:i', $this->getRawOriginal('horaFin'));
+        $horaInicio = Carbon::parse($this->getRawOriginal('horaInicio'));
+        $horaFin = Carbon::parse($this->getRawOriginal('horaFin'));
+        
+        // Si la hora de fin es menor a la de inicio, significa que cruza la medianoche
+        if ($horaFin->lt($horaInicio)) {
+            $horaFin->addDay();
+        }
+        
         return $horaInicio->diffInMinutes($horaFin);
     }
 

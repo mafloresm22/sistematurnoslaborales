@@ -1,8 +1,8 @@
 <div class="modal fade" id="modalEditSucursales" tabindex="-1" aria-labelledby="modalEditSucursalesLabel" aria-hidden="true">
    <div class="modal-dialog">
       <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title" id="modalEditSucursalesLabel">Editar Sucursal</h5>
+         <div class="modal-header bg-warning">
+            <h5 class="modal-title" id="modalEditSucursalesLabel" style="color: #ffffff">Editar Sucursal</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
          </div>
          <form id="formEditSucursales" method="POST">

@@ -52,3 +52,4 @@
 <!-- Custom JavaScript -->
 <script src="{{asset('js/hope-ui.js') }}"></script>
 <script src="{{asset('js/modelview.js')}}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

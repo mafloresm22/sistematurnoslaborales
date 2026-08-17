@@ -1,8 +1,8 @@
 <div class="modal fade" id="modalEditCategoria" tabindex="-1" aria-labelledby="modalEditCategoriaLabel" aria-hidden="true">
    <div class="modal-dialog">
       <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title" id="modalEditCategoriaLabel">Editar Categoría</h5>
+         <div class="modal-header bg-warning">
+            <h5 class="modal-title" id="modalEditCategoriaLabel" style="color: #ffffff">Editar Categoría</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
          </div>
          <form id="formEditCategoria" method="POST">

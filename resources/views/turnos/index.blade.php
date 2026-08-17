@@ -42,7 +42,7 @@
                                                     {{ $turno->nombreTurnos }}
                                                 </h5>
                                                 <span class="badge bg-light text-secondary border">
-                                                    <i class="bi bi-tag-fill me-1"></i>{{ $turno->categoria->nombreCategoria ?? 'General' }}
+                                                    <i class="bi bi-tag-fill me-1"></i>{{ $turno->categoria->nombreCategorias ?? 'General' }}
                                                 </span>
                                             </div>
 
@@ -84,12 +84,12 @@
                                         </div>
 
                                         <div class="d-flex gap-2 mt-auto pt-2 border-top">
-                                            <button type="button" class="btn btn-outline-warning btn-sm flex-fill fw-semibold" 
+                                            <button type="button" class="btn btn-warning btn-sm flex-fill fw-semibold" 
                                                     onclick="abrirModalEditarTurno({{ json_encode($turno) }})">
                                                 <i class="bi bi-pencil-square me-1"></i> Editar
                                             </button>
                                             
-                                            <button type="button" class="btn btn-outline-danger btn-sm flex-fill fw-semibold" 
+                                            <button type="button" class="btn btn-danger btn-sm flex-fill fw-semibold" 
                                                     onclick="confirmarEliminarTurno('{{ $turno->idTurno }}', '{{ $turno->nombreTurnos }}')">
                                                 <i class="bi bi-trash me-1"></i> Eliminar
                                             </button>
@@ -126,7 +126,6 @@
         }
 
         function abrirModalEditarTurno(turno) {
-            // Asignar los datos del objeto turno a los campos del modal de edición
             document.getElementById('edit_idTurno').value = turno.idTurno;
             document.getElementById('edit_nombreTurnos').value = turno.nombreTurnos;
             document.getElementById('edit_horaInicio').value = turno.horaInicio;

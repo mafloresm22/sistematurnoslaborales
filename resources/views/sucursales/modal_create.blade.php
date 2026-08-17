@@ -1,8 +1,8 @@
 <div class="modal fade" id="modalCreateSucursales" tabindex="-1" aria-labelledby="modalCreateSucursalesLabel" aria-hidden="true">
    <div class="modal-dialog">
       <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title" id="modalCreateSucursalesLabel">Nueva Sucursal</h5>
+         <div class="modal-header bg-primary">
+            <h5 class="modal-title" id="modalCreateSucursalesLabel" style="color: #ffffff">Nueva Sucursal</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
          </div>
          <form action="{{ route('sucursales.store') }}" method="POST">
