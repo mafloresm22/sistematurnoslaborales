@@ -8,7 +8,9 @@ use App\Http\Controllers\Security\PermissionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SucursalesController;
 use App\Http\Controllers\CategoriasController;
+use App\Http\Controllers\TurnosController;
 use App\Http\Controllers\EmpleadosController;
+
 use Illuminate\Support\Facades\Artisan;
 // Packages
 use Illuminate\Support\Facades\Route;
@@ -90,6 +92,12 @@ Route::group(['middleware' => 'auth'], function () {
     // Usuarios Module
     Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
     Route::get('/usuarios/show/{idUsuarios}', [UserController::class, 'show'])->name('usuarios.show');
+
+    // Turnos Module
+    Route::get('/turnos', [TurnosController::class, 'index'])->name('turnos.index');
+    Route::post('/turnos', [TurnosController::class, 'store'])->name('turnos.store');
+    Route::put('/turnos/{idTurnos}', [TurnosController::class, 'update'])->name('turnos.update');
+    Route::delete('/turnos/{idTurnos}', [TurnosController::class, 'destroy'])->name('turnos.destroy');
 });
 
 //App Details Page => 'Dashboard'], function() {

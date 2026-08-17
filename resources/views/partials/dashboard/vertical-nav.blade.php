@@ -63,7 +63,7 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" aria-current="page" href="" target="_blank">
+        <a class="nav-link {{ request()->routeIs('turnos.*') ? 'active' : '' }}" aria-current="page" href="{{route('turnos.index')}}">
             <i class="icon">
                 <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M20.8398 2H3.16016C2.52152 2 2 2.52136 2 3.16016V20.8398C2 21.4785 2.52152 22 3.16016 22H20.8398C21.4785 22 22 21.4785 22 20.8398V3.16016C22 2.52136 21.4785 2 20.8398 2Z" fill="currentColor"></path>

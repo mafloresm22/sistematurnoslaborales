@@ -7,12 +7,10 @@ use Illuminate\Http\Request;
 
 class TurnosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $turnos = Turnos::orderBy('idTurno', 'asc')->get();
+        return view('turnos.index', compact('turnos'));
     }
 
     /**

@@ -4,7 +4,9 @@
          <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                <div class="header-title">
-                  <h4 class="card-title">Categorías</h4>
+                  <h4 class="card-title fw-bold mb-0">
+                     <i class="bi bi-tags me-2 text-primary"></i>Listado de Categorías
+                  </h4>
                </div>
                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCreateCategoria">
                   <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">

@@ -2,9 +2,11 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div class="header-title">
-                        <h4 class="card-title">Listado de Usuarios</h4>
+                        <h4 class="card-title fw-bold mb-0">
+                            <i class="bi bi-people-fill me-2 text-primary"></i>Listado de Usuarios
+                        </h4>
                     </div>
                     <div class="search-box">
                         <form action="{{ route('usuarios.index') }}" method="GET" class="d-flex">
@@ -50,7 +52,7 @@
                                     
                                     <div class="mb-3 flex-grow-1">
                                         <p class="mb-1 text-muted">
-                                            <i class="bi bi-person me-2"></i><strong>Username:</strong> {{ $usuario->username }}
+                                            <i class="bi bi-person me-2"></i><strong>Usuario:</strong> {{ $usuario->username }}
                                         </p>
                                         <p class="mb-1 text-muted">
                                             <i class="bi bi-shield-lock me-2"></i><strong>Tipo:</strong> {{ ucfirst($usuario->user_type) }}
