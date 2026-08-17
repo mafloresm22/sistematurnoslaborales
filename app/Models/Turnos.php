@@ -10,6 +10,8 @@ class Turnos extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'idTurno';
+
     protected $fillable = [
         'nombreTurnos',
         'horaInicio',

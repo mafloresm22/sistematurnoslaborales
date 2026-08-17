@@ -15,7 +15,7 @@ class TurnosController extends Controller
         return view('turnos.index', compact('turnos', 'listaCategorias'));
     }
 
-        public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'nombreTurnos' => 'required|string|max:150',
@@ -56,22 +56,51 @@ class TurnosController extends Controller
                          ->with('success', 'El turno se ha registrado correctamente.');
     }
 
-    public function edit(Turnos $turnos)
+    public function update(Request $request, $idTurno)
     {
-        //
-    }
+        $request->validate([
+            'nombreTurnos' => 'required|string|max:150',
+            'categoriaid'  => 'required|exists:categorias,idCategorias',
+            'horaInicio'   => 'required|date_format:H:i',
+            'horaFin'      => 'required|date_format:H:i',
+            'colorFondo'   => 'required|string|max:10',
+            'colorTexto'   => 'required|string|max:10',
+        ], [
+            'nombreTurnos.required' => 'El nombre del turno es obligatorio.',
+            'categoriaid.required'  => 'Debe seleccionar una categoría.',
+            'categoriaid.exists'    => 'La categoría seleccionada no es válida.',
+            'horaInicio.required'   => 'La hora de inicio es requerida.',
+            'horaFin.required'      => 'La hora de fin es requerida.',
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Turnos $turnos)
-    {
-        //
-    }
+        $turno = Turnos::findOrFail($idTurno);
 
-    /**
-     * Remove the specified resource from storage.
-     */
+        $existeTurno = Turnos::where('idTurno', '!=', $idTurno) 
+                             ->where('horaInicio', $request->input('horaInicio'))
+                             ->where('horaFin', $request->input('horaFin'))
+                            ->where('categoriaid', $request->input('categoriaid'))
+                            ->exists();
+
+        if ($existeTurno) {
+            return redirect()->back()
+                             ->withInput()
+                             ->withErrors(['horaInicio' => 'Ya existe otro turno registrado con este mismo horario y categoría.']);
+        }
+
+        // 4. Actualizar el registro en la BD
+        $turno->update([
+            'nombreTurnos' => $request->input('nombreTurnos'),
+            'categoriaid'  => $request->input('categoriaid'),
+            'horaInicio'   => $request->input('horaInicio'),
+            'horaFin'      => $request->input('horaFin'),
+            'colorFondo'   => $request->input('colorFondo'),
+            'colorTexto'   => $request->input('colorTexto'),
+        ]);
+
+        // 5. Redireccionar con mensaje de éxito
+        return redirect()->route('turnos.index')
+                        ->with('success', 'El turno se ha actualizado correctamente.');
+    }
     public function destroy(Turnos $turnos)
     {
         //
