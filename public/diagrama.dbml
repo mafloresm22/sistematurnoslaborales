@@ -68,6 +68,7 @@ Table Ausencias{
     tipoAusencias enum('Vacaciones', 'Enfermedad', 'Permiso', 'Otros') [not null]
     estadoAusencias enum('Aprobado','Rechazado', 'Pendiente') [not null, default: 'Pendiente']
     observacionesAusencias text [null]
+    documentoAdjunto text [not null]
     empleadoid int [ref: > Empleados.idEmpleados]
     created_at timestamp
     updated_at timestamp

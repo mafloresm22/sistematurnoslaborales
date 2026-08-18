@@ -87,7 +87,6 @@ class TurnosController extends Controller
                              ->withErrors(['horaInicio' => 'Ya existe otro turno registrado con este mismo horario y categoría.']);
         }
 
-        // 4. Actualizar el registro en la BD
         $turno->update([
             'nombreTurnos' => $request->input('nombreTurnos'),
             'categoriaid'  => $request->input('categoriaid'),
@@ -97,7 +96,6 @@ class TurnosController extends Controller
             'colorTexto'   => $request->input('colorTexto'),
         ]);
 
-        // 5. Redireccionar con mensaje de éxito
         return redirect()->route('turnos.index')
                         ->with('success', 'El turno se ha actualizado correctamente.');
     }

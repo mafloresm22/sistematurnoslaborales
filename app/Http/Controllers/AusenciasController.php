@@ -3,16 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ausencias;
+use App\Models\Empleados;
 use Illuminate\Http\Request;
 
 class AusenciasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $ausencias = Ausencias::orderBy('idAusencia', 'asc')->paginate(9);
+        $hoy = now()->toDateString();
+        $ausenciasHoy = Ausencias::whereDate('fechaInicio', '<=', $hoy)
+                            ->whereDate('fechaFin', '>=', $hoy)
+                            ->count();
+
+        $ausenciasPendientes = Ausencias::where('estadoAusencias', 'Pendiente')->count();
+        $totalAusencias = $ausencias->count();
+        $listaEmpleados = Empleados::all();
+        return view('ausencias.index', compact('ausencias', 'listaEmpleados','ausenciasHoy', 'ausenciasPendientes', 'totalAusencias'));
     }
 
     /**

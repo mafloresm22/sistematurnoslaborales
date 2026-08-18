@@ -8,6 +8,7 @@ use App\Http\Controllers\Security\PermissionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SucursalesController;
 use App\Http\Controllers\CategoriasController;
+use App\Http\Controllers\AusenciasController;
 use App\Http\Controllers\TurnosController;
 use App\Http\Controllers\EmpleadosController;
 
@@ -98,6 +99,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/turnos', [TurnosController::class, 'store'])->name('turnos.store');
     Route::put('/turnos/{idTurnos}', [TurnosController::class, 'update'])->name('turnos.update');
     Route::delete('/turnos/{idTurnos}', [TurnosController::class, 'destroy'])->name('turnos.destroy');
+
+    // Ausencias Module
+    Route::get('/ausencias', [AusenciasController::class, 'index'])->name('ausencias.index');
+    Route::post('/ausencias', [AusenciasController::class, 'store'])->name('ausencias.store');
+    Route::put('/ausencias/{idAusencias}', [AusenciasController::class, 'update'])->name('ausencias.update');
+    Route::delete('/ausencias/{idAusencias}', [AusenciasController::class, 'destroy'])->name('ausencias.destroy');
 });
 
 //App Details Page => 'Dashboard'], function() {
