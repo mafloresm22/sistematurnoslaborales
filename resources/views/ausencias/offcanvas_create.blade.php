@@ -14,10 +14,10 @@
                 <label for="empleadoid" class="form-label fw-semibold text-secondary">
                     <i class="bi bi-person me-1"></i>Empleado <span class="text-danger">*</span>
                 </label>
-                <select class="form-select @error('categoriaid') is-invalid @enderror" id="categoriaid" name="categoriaid" required>
+                <select class="form-select @error('empleadoid') is-invalid @enderror" id="empleadoid" name="empleadoid" required>
                     <option value="" selected disabled>Selecciona un empleado...</option>
                     @foreach($listaEmpleados ?? [] as $empleado)
-                        <option value="{{ $empleado->id }}">
+                        <option value="{{ $empleado->idEmpleados }}">
                             {{ $empleado->nombreEmpleados }} {{ $empleado->apellidoEmpleados }}
                         </option>
                     @endforeach
@@ -70,24 +70,24 @@
             </div>
 
             <div class="mb-3">
-                <label for="observaciones" class="form-label fw-semibold text-secondary">
+                <label for="observacionesAusencias" class="form-label fw-semibold text-secondary">
                     <i class="bi bi-calendar-check me-1"></i>Observaciones
                 </label>
-                <textarea class="form-control @error('observaciones') is-invalid @enderror" 
-                       id="observaciones" name="observaciones">{{ old('observaciones') }}</textarea>
-                @error('observaciones')
+                <textarea class="form-control @error('observacionesAusencias') is-invalid @enderror" 
+                       id="observacionesAusencias" name="observacionesAusencias">{{ old('observacionesAusencias') }}</textarea>
+                @error('observacionesAusencias')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
             <div class="mb-4">
-                <label for="documentoAdjunto" class="form-label fw-semibold text-secondary">
+                <label for="documentoAdjuntoAusencias" class="form-label fw-semibold text-secondary">
                     <i class="bi bi-file-earmark-arrow-up me-1"></i>Documento Adjunto (Justificación)
                 </label>
-                <input type="file" class="form-control @error('documentoAdjunto') is-invalid @enderror" 
-                       id="documentoAdjunto" name="documentoAdjunto" accept=".pdf,.jpg,.jpeg,.png">
+                <input type="file" class="form-control @error('documentoAdjuntoAusencias') is-invalid @enderror" 
+                       id="documentoAdjuntoAusencias" name="documentoAdjuntoAusencias" accept=".pdf,.jpg,.jpeg,.png">
                 <div class="form-text text-muted small">Formatos permitidos: PDF, JPG, PNG.</div>
-                @error('documentoAdjunto')
+                @error('documentoAdjuntoAusencias')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>

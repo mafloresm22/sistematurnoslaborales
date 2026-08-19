@@ -15,6 +15,7 @@ class Ausencias extends Model
         'fechaFin',
         'tipoAusencias',
         'estadoAusencias',
+        'documentoAdjuntoAusencias',
         'observacionesAusencias'
     ];
 
