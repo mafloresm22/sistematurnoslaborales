@@ -389,7 +389,6 @@
              const nombreEl = document.getElementById('cambiarEstadoNombre');
              if(nombreEl) nombreEl.textContent = ds.nombre;
 
-             // Limpiar selección previa de radios
              document.querySelectorAll('input[name="estadoAusencias"]').forEach(r => r.checked = false);
           });
        });
