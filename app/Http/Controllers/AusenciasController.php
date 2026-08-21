@@ -28,7 +28,7 @@ class AusenciasController extends Controller
             'empleadoid' => 'required|integer|exists:empleados,idEmpleados',
             'fechaInicio' => 'required|date',
             'fechaFin' => 'required|date|after_or_equal:fechaInicio',
-            'tipoAusencias' => 'required|in:Vacaciones,Enfermedad,Permiso,Otros',
+            'tipoAusencias' => 'required|in:Vacaciones,Enfermedad,Licencia de maternidad/paternidad,Licencia no remunerada,Día libre,Otros',
             'observacionesAusencias' => 'nullable|string',
             'documentoAdjuntoAusencias' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
@@ -60,35 +60,60 @@ class AusenciasController extends Controller
         return redirect()->route('ausencias.index')->with('success', 'Ausencia registrada exitosamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Ausencias $ausencias)
+    public function show($idAusencias)
     {
-        //
+        $ausencia = Ausencias::with('empleado')->findOrFail($idAusencias);
+        return view('ausencias.show', compact('ausencia'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Ausencias $ausencias)
+    public function update(Request $request, $idAusencias)
     {
-        //
-    }
+        $ausencia = Ausencias::findOrFail($idAusencias);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Ausencias $ausencias)
-    {
-        //
-    }
+        $validatedData = $request->validate([
+            'empleadoid' => 'required|integer|exists:empleados,idEmpleados',
+            'fechaInicio' => 'required|date',
+            'fechaFin' => 'required|date|after_or_equal:fechaInicio',
+            'tipoAusencias' => 'required|in:Vacaciones,Enfermedad,Licencia de maternidad/paternidad,Licencia no remunerada,Día libre,Otros',
+            'observacionesAusencias' => 'nullable|string',
+            'documentoAdjuntoAusencias' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Ausencias $ausencias)
+        $cruceFechas = Ausencias::where('empleadoid', $validatedData['empleadoid'])
+            ->where('idAusencias', '!=', $idAusencias)
+            ->where('estadoAusencias', '!=', 'Rechazado')
+            ->where(function ($query) use ($validatedData) {
+                $query->where('fechaInicio', '<=', $validatedData['fechaFin'])
+                    ->where('fechaFin', '>=', $validatedData['fechaInicio']);
+            })
+            ->exists();
+
+        if ($cruceFechas) {
+            return redirect()->back()
+                            ->withInput()
+                            ->withErrors(['fechaInicio' => 'El empleado ya cuenta con otra ausencia registrada que se cruza con estas fechas.']);
+        }
+
+        if ($request->hasFile('documentoAdjuntoAusencias')) {
+            $path = $request->file('documentoAdjuntoAusencias')->store('documentos', 's3');
+            $validatedData['documentoAdjuntoAusencias'] = $path;
+        }
+
+        $ausencia->update($validatedData);
+
+        return redirect()->route('ausencias.index')->with('success', 'Ausencia actualizada exitosamente.');
+    }
+    
+    public function cambiarEstado(Request $request, $idAusencias)
     {
-        //
+        $request->validate([
+            'estadoAusencias' => 'required|in:Aprobado,Pendiente,Rechazado',
+        ]);
+
+        $ausencia = Ausencias::findOrFail($idAusencias);
+        $ausencia->estadoAusencias = $request->estadoAusencias;
+        $ausencia->save();
+
+        return redirect()->route('ausencias.index')->with('success', 'Estado de ausencia actualizado a "' . $request->estadoAusencias . '" exitosamente.');
     }
 }

@@ -138,10 +138,10 @@
                                     {{-- Ver Documento Adjunto / Detalles --}}
                                     <button type="button" class="btn btn-sm btn-icon btn-success btn-mostrar" 
                                         data-bs-toggle="modal" 
-                                        data-bs-target="#modalDocumentoAdjunto" 
+                                        data-bs-target="#modalShowAusencia" 
                                         data-bs-toggle="tooltip" 
                                         data-bs-placement="top" 
-                                        title="Ver Documento Adjunto"
+                                        title="Ver ausencia"
                                         data-id-ausencia="{{ $ausencia->idAusencias }}"
                                         data-nombre="{{ optional($ausencia->empleado)->nombreEmpleados }}"
                                         data-apellido="{{ optional($ausencia->empleado)->apellidoEmpleados }}"
@@ -149,7 +149,7 @@
                                         data-fechaini="{{ optional($ausencia->fechaInicio)->format('d-m-Y') }}"
                                         data-fechafin="{{ optional($ausencia->fechaFin)->format('d-m-Y') }}"
                                         data-dias="{{ $ausencia->diasAusencias }}"
-                                        data-documento="{{ $ausencia->documentoAdjunto }}"
+                                        data-documento="{{ $ausencia->documentoAdjuntoAusencias ? env('AWS_URL') . '/' . env('AWS_BUCKET') . '/' . $ausencia->documentoAdjuntoAusencias : '' }}"
                                         data-observaciones="{{ $ausencia->observacionesAusencias }}"
                                         data-estado="{{ $ausencia->estadoAusencias }}"
                                         data-avatar="{{ optional($ausencia->empleado)->avatarEmpleados ? asset($ausencia->empleado->avatarEmpleados) : asset('images/avatars/Empleados.png') }}">
@@ -172,9 +172,9 @@
                                         data-fechafin="{{ optional($ausencia->fechaFin)->format('Y-m-d') }}"
                                         data-estado="{{ $ausencia->estadoAusencias }}"
                                         data-observaciones="{{ $ausencia->observacionesAusencias }}"
-                                        data-documento="{{ $ausencia->documentoAdjunto }}"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalEditAusencias"
+                                        data-documento="{{ $ausencia->documentoAdjuntoAusencias ? env('AWS_URL') . '/' . env('AWS_BUCKET') . '/' . $ausencia->documentoAdjuntoAusencias : '' }}"
+                                        data-bs-toggle="offcanvas"
+                                        data-bs-target="#offcanvasEditAusencia"
                                         title="Editar Ausencia">
                                        <span class="btn-inner">
                                           <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -185,19 +185,36 @@
                                        </span>
                                     </button>
 
-                                    {{-- Eliminar Ausencia --}}
+                                    {{-- Visualizar y descargar Documento adjunto --}}
+                                    <button type="button"
+                                        class="btn btn-sm btn-icon btn-primary btn-visualizar"
+                                        data-documento="{{ $ausencia->documentoAdjuntoAusencias ? env('AWS_URL') . '/' . env('AWS_BUCKET') . '/' . $ausencia->documentoAdjuntoAusencias : '' }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalDocumentoAdjunto"
+                                        title="Descargar Documento">
+                                       <span class="btn-inner">
+                                          <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">     
+                                            <path d="M12.1221 15.436L12.1221 3.39502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
+                                            <path d="M15.0381 12.5083L12.1221 15.4363L9.20609 12.5083" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    
+                                            <path d="M16.7551 8.12793H17.6881C19.7231 8.12793 21.3721 9.77693 21.3721 11.8129V16.6969C21.3721 18.7269 19.7271 20.3719 17.6971 20.3719L6.55707 20.3719C4.52207 20.3719 2.87207 18.7219 2.87207 16.6869V11.8019C2.87207 9.77293 4.51807 8.12793 6.54707 8.12793L7.48907 8.12793" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                
+                                          </svg>                            
+                                       </span>
+                                    </button>
+
+                                    {{-- Cambiar estado Ausencia --}}
                                     <button type="button" 
-                                       class="btn btn-sm btn-icon btn-danger btn-eliminar" 
+                                       class="btn btn-sm btn-icon btn-danger btn-cambiar-estado" 
                                        data-id-ausencia="{{ $ausencia->idAusencias }}"
                                        data-nombre="{{ optional($ausencia->empleado)->nombreEmpleados }} {{ optional($ausencia->empleado)->apellidoEmpleados }}"
                                        data-bs-toggle="modal" 
-                                       data-bs-target="#modalEliminarAusencias" 
-                                       title="Eliminar Ausencia">
+                                       data-bs-target="#modalCambiarEstadoAusencias" 
+                                       title="Cambiar estado Ausencia">
                                        <span class="btn-inner">
                                           <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                             <path d="M19.3248 9.46826C19.3248 9.46826 18.7818 16.2033 18.4668 19.0403C18.3168 20.3953 17.4798 21.1893 16.1088 21.2143C13.4998 21.2613 10.8878 21.2643 8.27979 21.2093C6.96079 21.1823 6.13779 20.3783 5.99079 19.0473C5.67379 16.1853 5.13379 9.46826 5.13379 9.46826" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                             <path d="M20.708 6.23975H3.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                             <path d="M17.4406 6.23973C16.6556 6.23973 15.9796 5.68473 15.8256 4.91573L15.5826 3.69973C15.4326 3.13873 14.9246 2.75073 14.3456 2.75073H10.1126C9.53358 2.75073 9.02558 3.13873 8.87558 3.69973L8.63258 4.91573C8.47858 5.68473 7.80258 6.23973 7.01758 6.23973" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                             <path d="M16.8397 20.1642V6.54639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                             <path d="M20.9173 16.0681L16.8395 20.1648L12.7617 16.0681" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                             <path d="M6.91102 3.83276V17.4505" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                             <path d="M2.8335 7.92894L6.91127 3.83228L10.9891 7.92894" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                           </svg>
                                        </span>
                                     </button>
@@ -213,11 +230,12 @@
       </div>
    </div>
 
-   {{-- Modales (Asegúrate de tener estos archivos creados o ajustados) --}}
+   {{-- Modales --}}
    @include('ausencias.offcanvas_create')
    @include('ausencias.offcanvas_edit')
+   @include('ausencias.modal_show')
+   @include('ausencias.modal_cambiarEstado')
    @include('ausencias.modal_documentoAdjunto')
-   @include('ausencias.modal_eliminar')
 
    @push('scripts')
     <script>
@@ -283,45 +301,96 @@
        document.querySelectorAll('.btn-editar').forEach(function (btn) {
           btn.addEventListener('click', function () {
              const ds = this.dataset;
-             const form = document.getElementById('formEditAusencias');
+             const form = document.getElementById('formEditAusencia');
 
              if(form) {
                  form.action = `{{ url('ausencias') }}/${ds.idAusencia}`;
              }
 
-             if(document.getElementById('edit_empleadoid')) {
-                 document.getElementById('edit_empleadoid').value = ds.empleadoid;
+             if(document.getElementById('empleadoid_edit')) {
+                 document.getElementById('empleadoid_edit').value = ds.empleadoid;
              }
-             if(document.getElementById('edit_tipoAusencias')) {
-                 document.getElementById('edit_tipoAusencias').value = ds.tipo;
+             if(document.getElementById('tipoAusencias_edit')) {
+                 document.getElementById('tipoAusencias_edit').value = ds.tipo;
              }
-             if(document.getElementById('edit_fechaInicio')) {
-                 document.getElementById('edit_fechaInicio').value = ds.fechaini;
+             if(document.getElementById('fechaInicio_edit')) {
+                 document.getElementById('fechaInicio_edit').value = ds.fechaini;
              }
-             if(document.getElementById('edit_fechaFin')) {
-                 document.getElementById('edit_fechaFin').value = ds.fechafin;
+             if(document.getElementById('fechaFin_edit')) {
+                 document.getElementById('fechaFin_edit').value = ds.fechafin;
              }
-             if(document.getElementById('edit_estadoAusencias')) {
-                 document.getElementById('edit_estadoAusencias').value = ds.estado;
+             if(document.getElementById('observacionesAusencias_edit')) {
+                 document.getElementById('observacionesAusencias_edit').value = ds.observaciones !== 'null' ? ds.observaciones : '';
              }
-             if(document.getElementById('edit_observacionesAusencias')) {
-                 document.getElementById('edit_observacionesAusencias').value = ds.observaciones !== 'null' ? ds.observaciones : '';
+
+             const docContenedor = document.getElementById('documentoActualContenedor');
+             const docLink = document.getElementById('documentoActualLink');
+             
+             if(docContenedor && docLink) {
+                 if(ds.documento && ds.documento !== 'null' && ds.documento !== '') {
+                     docLink.href = ds.documento.startsWith('http') ? ds.documento : `{{ asset('storage') }}/${ds.documento}`;
+                     docContenedor.classList.remove('d-none');
+                 } else {
+                     docContenedor.classList.add('d-none');
+                 }
              }
           });
        });
 
-       // Configurar modal de Eliminar Ausencia
-       document.querySelectorAll('.btn-eliminar').forEach(function (btn) {
+       // Mostrar documento en modal de preview
+       document.querySelectorAll('.btn-visualizar').forEach(function (btn) {
           btn.addEventListener('click', function () {
              const ds = this.dataset;
-             const form = document.getElementById('formEliminarAusencias');
+             const previewContenedor = document.getElementById('previewDocumentoContenedor');
+             const downloadBtn = document.getElementById('btnDescargarDocumento');
+             const noDocMessage = document.getElementById('noDocumentoMensaje');
+             
+             if(ds.documento && ds.documento !== 'null' && ds.documento !== '') {
+                 const docUrl = ds.documento;
+                 
+                 if (downloadBtn) {
+                     downloadBtn.href = docUrl;
+                     downloadBtn.classList.remove('d-none');
+                 }
 
+                 if (previewContenedor) {
+                     previewContenedor.innerHTML = '';
+                     
+                     const docPath = docUrl.split('?')[0]; 
+                     
+                     if(docPath.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
+                         previewContenedor.innerHTML = `<img src="${docUrl}" class="img-fluid rounded shadow-sm" style="max-height: 70vh; object-fit: contain;" alt="Documento adjunto">`;
+                     } else {
+                         previewContenedor.innerHTML = `<iframe src="${docUrl}" width="100%" height="500px" class="border rounded" style="border: none;"></iframe>`;
+                     }
+                     previewContenedor.classList.remove('d-none');
+                 }
+                 
+                 if(noDocMessage) noDocMessage.classList.add('d-none');
+                 
+             } else {
+                 if (previewContenedor) previewContenedor.classList.add('d-none');
+                 if (downloadBtn) downloadBtn.classList.add('d-none');
+                 if (noDocMessage) noDocMessage.classList.remove('d-none');
+             }
+          });
+       });
+
+       // Configurar modal de Cambiar Estado Ausencia
+       document.querySelectorAll('.btn-cambiar-estado').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+             const ds = this.dataset;
+             const form = document.getElementById('formCambiarEstadoAusencias');
+             
              if(form) {
-                 form.action = `{{ url('ausencias') }}/${ds.idAusencia}`;
+                 form.action = `{{ url('ausencias') }}/${ds.idAusencia}/estado`;
              }
-             if(document.getElementById('eliminar_nombreAusencia')) {
-                 document.getElementById('eliminar_nombreAusencia').textContent = ds.nombre;
-             }
+
+             const nombreEl = document.getElementById('cambiarEstadoNombre');
+             if(nombreEl) nombreEl.textContent = ds.nombre;
+
+             // Limpiar selección previa de radios
+             document.querySelectorAll('input[name="estadoAusencias"]').forEach(r => r.checked = false);
           });
        });
     </script>

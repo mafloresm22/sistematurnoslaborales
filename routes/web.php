@@ -104,6 +104,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/ausencias', [AusenciasController::class, 'index'])->name('ausencias.index');
     Route::post('/ausencias', [AusenciasController::class, 'store'])->name('ausencias.store');
     Route::put('/ausencias/{idAusencias}', [AusenciasController::class, 'update'])->name('ausencias.update');
+    Route::patch('/ausencias/{idAusencias}/estado', [AusenciasController::class, 'cambiarEstado'])->name('ausencias.cambiarEstado');
     Route::delete('/ausencias/{idAusencias}', [AusenciasController::class, 'destroy'])->name('ausencias.destroy');
 });
 
