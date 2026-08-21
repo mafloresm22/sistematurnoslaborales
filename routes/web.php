@@ -11,6 +11,7 @@ use App\Http\Controllers\CategoriasController;
 use App\Http\Controllers\AusenciasController;
 use App\Http\Controllers\TurnosController;
 use App\Http\Controllers\EmpleadosController;
+use App\Http\Controllers\CronogramasController;
 
 use Illuminate\Support\Facades\Artisan;
 // Packages
@@ -106,6 +107,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::put('/ausencias/{idAusencias}', [AusenciasController::class, 'update'])->name('ausencias.update');
     Route::patch('/ausencias/{idAusencias}/estado', [AusenciasController::class, 'cambiarEstado'])->name('ausencias.cambiarEstado');
     Route::delete('/ausencias/{idAusencias}', [AusenciasController::class, 'destroy'])->name('ausencias.destroy');
+
+    // Cronogramas Module
+    Route::get('/cronogramas', [CronogramasController::class, 'index'])->name('cronogramas.index');
+    Route::get('/cronogramas/{idSucursales}/eventos', [CronogramasController::class, 'eventos'])->name('cronogramas.eventos');
+    Route::post('/cronogramas', [CronogramasController::class, 'store'])->name('cronogramas.store');
+    Route::put('/cronogramas/{idCronogramas}', [CronogramasController::class, 'update'])->name('cronogramas.update');
+    Route::delete('/cronogramas/{idCronogramas}', [CronogramasController::class, 'destroy'])->name('cronogramas.destroy');
 });
 
 //App Details Page => 'Dashboard'], function() {
