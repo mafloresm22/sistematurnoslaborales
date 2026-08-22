@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cronogramas;
+use App\Models\Empleados;
 use App\Models\Sucursales;
 use App\Models\Turnos;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class CronogramasController extends Controller
             'cronogramas as totalTurnos',
         ])->get();
 
-        $turnos = Turnos::all();
+        $turnos = Turnos::with('categoria')->get();
         $assets = ['data-table'];
         return view('cronogramas.index', compact('sucursales', 'turnos', 'assets'));
     }
@@ -53,49 +54,54 @@ class CronogramasController extends Controller
         return response()->json($eventos);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function empleadosPorSucursal($idSucursales)
     {
-        //
+        $empleados = Empleados::where('estadoEmpleados', 1)
+            ->orWhereNull('estadoEmpleados')
+            ->get(['idEmpleados', 'nombreEmpleados', 'apellidoEmpleados']);
+
+        return response()->json($empleados);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'empleadoid'      => 'required|integer|exists:empleados,idEmpleados',
+            'sucursalesid'    => 'required|integer|exists:sucursales,idSucursales',
+            'turnoid'         => 'required|integer|exists:turnos,idTurno',
+            'fechaCronograma' => 'required|date',
+            'notaCronograma'  => 'nullable|string|max:500',
+        ]);
+
+        $existe = Cronogramas::where('empleadoid', $validated['empleadoid'])
+            ->whereDate('fechaCronograma', $validated['fechaCronograma'])
+            ->exists();
+
+        if ($existe) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Este empleado ya tiene un turno asignado para esa fecha.',
+            ], 422);
+        }
+
+        if (empty($validated['notaCronograma'])) {
+            $validated['notaCronograma'] = 'Ninguno';
+        }
+
+        $cronograma = Cronogramas::create($validated);
+
+        return response()->json([
+            'success'    => true,
+            'message'    => 'Turno asignado correctamente.',
+            'cronograma' => $cronograma,
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Cronogramas $cronogramas)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Cronogramas $cronogramas)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Cronogramas $cronogramas)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Cronogramas $cronogramas)
     {
         //

@@ -21,7 +21,7 @@ class Cronogramas extends Model
         'fechaCronograma' => 'date'
     ];
 
-    protected $appends = ['diaSemana'];
+    protected $appends = ['diasSemana'];
 
     /*
         Obtener dia de la semana segun la fecha del
