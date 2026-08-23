@@ -77,6 +77,12 @@
                                                 data-bs-target="#modalCalendarioCronograma">
                                                 <i class="bi bi-calendar3 me-1"></i>Ver Calendario
                                             </button>
+                                            <button type="button"
+                                                class="btn btn-sm btn-warning px-3 fw-semibold"
+                                                onclick="confirmarEditar({{ $sucursal->idSucursales }}, '{{ addslashes($sucursal->nombreSucursales) }}')"
+                                                title="Editar Cronograma">
+                                                <i class="bi bi-pencil-square me-1"></i>Editar
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -89,6 +95,7 @@
     </div>
 
     @include('cronogramas.modal_cronogramas')
+    @include('cronogramas.modal_edit_eliminar')
 
     @push('scripts')
     <script>

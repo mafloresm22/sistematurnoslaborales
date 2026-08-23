@@ -97,13 +97,66 @@ class CronogramasController extends Controller
         ], 201);
     }
 
-    public function edit(Cronogramas $cronogramas)
+    public function listarPorSucursal($idSucursales)
     {
-        //
+        $cronogramas = Cronogramas::with(['empleado', 'turno'])
+            ->where('sucursalesid', $idSucursales)
+            ->orderBy('fechaCronograma', 'desc')
+            ->get();
+
+        return response()->json($cronogramas);
     }
 
-    public function destroy(Cronogramas $cronogramas)
+    public function update(Request $request, $idCronogramas)
     {
-        //
+        $validated = $request->validate([
+            'empleadoid'      => 'required|integer|exists:empleados,idEmpleados',
+            'turnoid'         => 'required|integer|exists:turnos,idTurno',
+            'fechaCronograma' => 'required|date',
+            'notaCronograma'  => 'nullable|string|max:500',
+        ]);
+
+        $existe = Cronogramas::where('empleadoid', $validated['empleadoid'])
+            ->whereDate('fechaCronograma', $validated['fechaCronograma'])
+            ->where('idCronograma', '!=', $idCronogramas)
+            ->exists();
+
+        if ($existe) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Este empleado ya tiene un turno asignado para esa fecha.',
+            ], 422);
+        }
+
+        if (empty($validated['notaCronograma'])) {
+            $validated['notaCronograma'] = 'Ninguno';
+        }
+
+        $cronograma = Cronogramas::findOrFail($idCronogramas);
+        $cronograma->update($validated);
+
+        return response()->json([
+            'success'    => true,
+            'message'    => 'Turno actualizado correctamente.',
+            'cronograma' => $cronograma,
+        ]);
+    }
+
+    public function destroy($idCronogramas)
+    {
+        try {
+            $cronograma = Cronogramas::findOrFail($idCronogramas);
+            $cronograma->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'El turno ha sido eliminado correctamente.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se pudo eliminar el turno.'
+            ], 500);
+        }
     }
 }

@@ -112,6 +112,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/cronogramas', [CronogramasController::class, 'index'])->name('cronogramas.index');
     Route::get('/cronogramas/{idSucursales}/eventos', [CronogramasController::class, 'eventos'])->name('cronogramas.eventos');
     Route::get('/cronogramas/{idSucursales}/empleados', [CronogramasController::class, 'empleadosPorSucursal'])->name('cronogramas.empleados');
+    Route::get('/cronogramas/{idSucursales}/listar', [CronogramasController::class, 'listarPorSucursal'])->name('cronogramas.listar');
     Route::post('/cronogramas', [CronogramasController::class, 'store'])->name('cronogramas.store');
     Route::put('/cronogramas/{idCronogramas}', [CronogramasController::class, 'update'])->name('cronogramas.update');
     Route::delete('/cronogramas/{idCronogramas}', [CronogramasController::class, 'destroy'])->name('cronogramas.destroy');

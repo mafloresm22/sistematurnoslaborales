@@ -9,6 +9,8 @@ class Cronogramas extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'idCronograma';
+
     protected $fillable = [
         'empleadoid',
         'sucursalesid',
