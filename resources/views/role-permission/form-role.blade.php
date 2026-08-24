@@ -1,17 +1,10 @@
 {{ Form::open(['url' => '#','method' => 'post']) }}
     <div class="form-group">
-        <label class="form-label">role title</label>
-        {{ Form::text('title', old('title'), ['class' => 'form-control','id' => 'role-title', 'placeholder' => 'Role Title', 'required']) }}
+        <label class="form-label">Nombre del Rol</label>
+        {{ Form::text('title', old('title'), ['class' => 'form-control','id' => 'role-title', 'required']) }}
     </div>
-    <label class="form-label">Status</label>
-    <div class="form-check">
-        {{ Form::radio('status', '1',old('status'), ['class' => 'form-check-input', 'id' => 'roleassigned']); }}
-        <label class="form-check-label" for="roleassigned">yes</label>
+    <div class="d-flex justify-content-end mt-2">
+        <button type="button" class="btn btn-danger mx-1" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary mx-1" data-bs-dismiss="modal">Guardar</button>
     </div>
-    <div class="mb-3 form-check">
-        {{ Form::radio('status', '0',old('status'), ['class' => 'form-check-input', 'id' => 'rolenotassigned']); }}
-        <label class="form-check-label" for="rolenotassigned">no</label>
-    </div>
-    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save</button>
-    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
 {{ Form::close() }}

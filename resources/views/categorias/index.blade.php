@@ -8,12 +8,14 @@
                      <i class="bi bi-tags me-2 text-primary"></i>Listado de Categorías
                   </h4>
                </div>
+               @can('categorias.crear')
                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCreateCategoria">
                   <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
                      <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                   Nueva Categoría
                </button>
+               @endcan
             </div>
             <div class="card-body px-0">
 
@@ -50,6 +52,7 @@
                               <td>
                                  <div class="d-flex align-items-center gap-2">
                                     {{-- Editar --}}
+                                    @can('categorias.editar')
                                     <button type="button"
                                        class="btn btn-sm btn-icon btn-warning btn-editar"
                                        data-id-categorias="{{ $categoria->idCategorias }}"
@@ -65,8 +68,10 @@
                                           </svg>
                                        </span>
                                     </button>
+                                    @endcan
 
                                     {{-- Eliminar --}}
+                                    @can('categorias.eliminar')
                                     <form action="{{ route('categorias.destroy', $categoria->idCategorias) }}" method="POST" class="form-eliminar">
                                        @csrf
                                        @method('DELETE')
@@ -80,6 +85,7 @@
                                           </span>
                                        </button>
                                     </form>
+                                    @endcan
                                  </div>
                               </td>
                            </tr>

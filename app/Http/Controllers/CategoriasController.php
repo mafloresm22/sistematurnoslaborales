@@ -9,12 +9,14 @@ class CategoriasController extends Controller
 {
     public function index()
     {
+        $this->authorize('categorias.ver');
         $categorias = Categorias::orderBy('idCategorias', 'asc')->paginate(10);
         return view('categorias.index', compact('categorias'));
     }
 
     public function store(Request $request)
     {
+        $this->authorize('categorias.crear');
         $request->validate([
             'nombreCategorias' => 'required|string|max:150|unique:categorias,nombreCategorias',
         ], [
@@ -32,6 +34,7 @@ class CategoriasController extends Controller
 
     public function update(Request $request, $idCategorias)
     {
+        $this->authorize('categorias.editar');
         $categoria = Categorias::findOrFail($idCategorias);
 
         $request->validate([
@@ -51,6 +54,7 @@ class CategoriasController extends Controller
 
     public function destroy($idCategorias)
     {
+        $this->authorize('categorias.eliminar');
         $categoria = Categorias::findOrFail($idCategorias);
         $categoria->delete();
 

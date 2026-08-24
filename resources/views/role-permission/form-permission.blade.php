@@ -1,8 +1,10 @@
 {{ Form::open(['url' => '#','method' => 'post']) }}
     <div class="form-group">
-        <label class="form-label">permission title</label>
-        {{ Form::text('title', old('title'), ['class' => 'form-control','id' => 'permission-title', 'placeholder' => 'Permission Title', 'required']) }}
+        <label class="form-label">Nombre del Permiso</label>
+        {{ Form::text('title', old('title'), ['class' => 'form-control','id' => 'permission-title', 'required']) }}
     </div>
-    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save</button>
-    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+    <div class="d-flex justify-content-end mt-2">
+        <button type="button" class="btn btn-danger mx-1" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary mx-1" data-bs-dismiss="modal">Guardar</button>
+    </div>
 {{ Form::close() }}

@@ -8,12 +8,14 @@
                      <i class="bi bi-clock-history me-2 text-primary"></i>Listado de Empleados
                   </h4>
                </div>
+               @can('empleados.crear')
                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCreateEmpleados">
                   <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
                      <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                   Nuevo Empleado
                </button>
+               @endcan
             </div>
             <div class="card-body px-0">
 
@@ -68,6 +70,7 @@
                               <td>
                                  <div class="d-flex align-items-center gap-2">
                                     {{-- Show --}}
+                                    @can('empleados.ver')
                                     <button type="button" class="btn btn-sm btn-icon btn-success btn-mostrar" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#modalMostrarEmpleados" 
@@ -96,7 +99,9 @@
                                           </svg>
                                        </span>
                                     </button>
+                                    @endcan
                                     {{-- Editar --}}
+                                    @can('empleados.editar')
                                      <button type="button"
                                         class="btn btn-sm btn-icon btn-warning btn-editar"
                                         data-id-empleado="{{ $empleado->idEmpleados }}"
@@ -124,8 +129,10 @@
                                           </svg>
                                        </span>
                                     </button>
+                                    @endcan
 
                                     {{-- Eliminar / Cambiar Estado --}}
+                                    @can('empleados.eliminar')
                                     <button type="button" 
                                        class="btn btn-sm btn-icon btn-danger btn-eliminar" 
                                        data-id-empleado="{{ $empleado->idEmpleados }}"
@@ -142,6 +149,7 @@
                                           </svg>
                                        </span>
                                     </button>
+                                    @endcan
                                  </div>
                               </td>
                            </tr>

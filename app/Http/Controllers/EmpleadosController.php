@@ -15,12 +15,14 @@ class EmpleadosController extends Controller
 {
     public function index()
     {
+        $this->authorize('empleados.ver');
         $empleados = Empleados::orderBy('idEmpleados', 'asc')->get();
         return view('empleados.index', compact('empleados'));
     }
 
     public function store(Request $request)
     {
+        $this->authorize('empleados.crear');
         $tipoDoc = $request->tipodocumentoEmpleados;
         if ($tipoDoc === 'Otro') {
             $tipoDoc = $request->tipodocumentoEmpleados_otro ?? 'Otro';
@@ -120,6 +122,7 @@ class EmpleadosController extends Controller
 
     public function update(Request $request, $idEmpleados)
     {
+        $this->authorize('empleados.editar');
         $empleado = Empleados::findOrFail($idEmpleados);
         $usuario = User::findOrFail($empleado->usuarioid);
 
@@ -206,6 +209,7 @@ class EmpleadosController extends Controller
 
     public function destroy(Request $request, $idEmpleados)
     {
+        $this->authorize('empleados.eliminar');
         $empleado = Empleados::findOrFail($idEmpleados);
         $usuario = User::findOrFail($empleado->usuarioid);
 

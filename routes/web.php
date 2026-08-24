@@ -61,6 +61,7 @@ Route::get('/', function () {
 Route::group(['middleware' => 'auth'], function () {
     // Permission Module
     Route::get('/role-permission',[RolePermission::class, 'index'])->name('role.permission.list');
+    Route::post('/role-permission',[RolePermission::class, 'store'])->name('role.permission.store');
     Route::resource('permission',PermissionController::class);
     Route::resource('role', RoleController::class);
 
