@@ -1,4 +1,5 @@
 <ul class="navbar-nav iq-main-menu"  id="sidebar">
+    @can('inicio.ver')
     <li class="nav-item">
         <a class="nav-link {{activeRoute(route('inicio'))}}" aria-current="page" href="{{route('inicio')}}">
             <i class="icon">
@@ -10,6 +11,8 @@
             <span class="item-name">Inicio</span>
         </a>
     </li>
+    @endcan
+    @can('roles.ver')
     <li class="nav-item">
         <a class="nav-link {{ request()->routeIs('role.permission.list') ? 'active' : '' }}" aria-current="page" href="{{ route('role.permission.list') }}">
             <i class="icon">
@@ -22,6 +25,8 @@
             <span class="item-name">Roles y Permisos</span>
         </a>
     </li>
+    @endcan
+    @can('categorias.ver')
     <li class="nav-item">
         <a class="nav-link {{ request()->routeIs('categorias.*') ? 'active' : '' }}" aria-current="page" href="{{route('categorias.index')}}">
             <i class="icon">
@@ -32,6 +37,8 @@
             <span class="item-name">Categorias</span>
         </a>
     </li>
+    @endcan
+    @can('usuarios.ver')
     <li class="nav-item">
         <a class="nav-link {{ request()->routeIs('usuarios.*') ? 'active' : '' }}" aria-current="page" href="{{route('usuarios.index')}}">
             <i class="icon">
@@ -42,6 +49,8 @@
             <span class="item-name">Usuarios</span>
         </a>
     </li>
+    @endcan
+    @can('empleados.ver')
     <li class="nav-item">
         <a class="nav-link {{ request()->routeIs('empleados.*') ? 'active' : '' }}" aria-current="page" href="{{route('empleados.index')}}">
             <i class="icon">
@@ -52,6 +61,8 @@
             <span class="item-name">Empleados</span>
         </a>
     </li>
+    @endcan
+    @can('sucursales.ver')
     <li class="nav-item">
         <a class="nav-link {{ request()->routeIs('sucursales.*') ? 'active' : '' }}" aria-current="page" href="{{route('sucursales.index')}}">
             <i class="icon">
@@ -62,6 +73,8 @@
             <span class="item-name">Sucursales</span>
         </a>
     </li>
+    @endcan
+    @can('turnos.ver')
     <li class="nav-item">
         <a class="nav-link {{ request()->routeIs('turnos.*') ? 'active' : '' }}" aria-current="page" href="{{route('turnos.index')}}">
             <i class="icon">
@@ -74,6 +87,8 @@
             <span class="item-name">Turnos</span>
         </a>
     </li>
+    @endcan
+    @can('ausencias.ver')
     <li class="nav-item">
         <a class="nav-link {{ request()->routeIs('ausencias.*') ? 'active' : '' }}" aria-current="page" href="{{route('ausencias.index')}}">
             <i class="icon">
@@ -84,6 +99,8 @@
             <span class="item-name">Ausencias</span>
         </a>
     </li>
+    @endcan
+    @can('cronogramas.ver')
     <li class="nav-item">
         <a class="nav-link {{ request()->routeIs('cronogramas.*') ? 'active' : '' }}" aria-current="page" href="{{route('cronogramas.index')}}">
             <i class="icon">
@@ -94,3 +111,4 @@
             <span class="item-name">Cronograma</span>
         </a>
     </li>
+    @endcan

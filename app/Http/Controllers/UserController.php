@@ -206,6 +206,8 @@ class UserController extends Controller
         ]);
 
         $user = User::findOrFail($request->user_id);
+        $user->user_type = $request->role;
+        $user->save();
         $user->syncRoles([$request->role]);
 
         return redirect()->back()->with('success', 'Rol actualizado exitosamente.');

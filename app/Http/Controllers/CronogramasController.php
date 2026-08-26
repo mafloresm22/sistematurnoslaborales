@@ -12,6 +12,7 @@ class CronogramasController extends Controller
 {
     public function index()
     {
+        $this->authorize('cronogramas.ver');
         $sucursales = Sucursales::withCount([
             'cronogramas as totalEmpleados' => function($q) {
                 $q->distinct('empleadoid');
@@ -29,6 +30,7 @@ class CronogramasController extends Controller
      */
     public function eventos($idSucursales)
     {
+        $this->authorize('cronogramas.ver');
         $cronogramas = Cronogramas::with(['empleado', 'turno'])
             ->where('sucursalesid', $idSucursales)
             ->get();
@@ -56,6 +58,7 @@ class CronogramasController extends Controller
 
     public function empleadosPorSucursal($idSucursales)
     {
+        $this->authorize('cronogramas.ver');
         $empleados = Empleados::where('estadoEmpleados', 1)
             ->orWhereNull('estadoEmpleados')
             ->get(['idEmpleados', 'nombreEmpleados', 'apellidoEmpleados']);
@@ -65,6 +68,7 @@ class CronogramasController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('cronogramas.crear');
         $validated = $request->validate([
             'empleadoid'      => 'required|integer|exists:empleados,idEmpleados',
             'sucursalesid'    => 'required|integer|exists:sucursales,idSucursales',
@@ -99,6 +103,7 @@ class CronogramasController extends Controller
 
     public function listarPorSucursal($idSucursales)
     {
+        $this->authorize('cronogramas.ver');
         $cronogramas = Cronogramas::with(['empleado', 'turno'])
             ->where('sucursalesid', $idSucursales)
             ->orderBy('fechaCronograma', 'desc')
@@ -109,6 +114,7 @@ class CronogramasController extends Controller
 
     public function update(Request $request, $idCronogramas)
     {
+        $this->authorize('cronogramas.editar');
         $validated = $request->validate([
             'empleadoid'      => 'required|integer|exists:empleados,idEmpleados',
             'turnoid'         => 'required|integer|exists:turnos,idTurno',
@@ -144,6 +150,7 @@ class CronogramasController extends Controller
 
     public function destroy($idCronogramas)
     {
+        $this->authorize('cronogramas.eliminar');
         try {
             $cronograma = Cronogramas::findOrFail($idCronogramas);
             $cronograma->delete();

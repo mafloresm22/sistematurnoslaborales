@@ -69,6 +69,7 @@
                                             </span>
                                         </td>
                                         <td class="text-center align-middle">
+                                            @can('cronogramas.ver')
                                             <button type="button"
                                                 class="btn btn-sm btn-success px-3 fw-semibold btn-ver-calendario"
                                                 data-id-sucursal="{{ $sucursal->idSucursales }}"
@@ -77,12 +78,15 @@
                                                 data-bs-target="#modalCalendarioCronograma">
                                                 <i class="bi bi-calendar3 me-1"></i>Ver Calendario
                                             </button>
+                                            @endcan
+                                            @can('cronogramas.editar')
                                             <button type="button"
                                                 class="btn btn-sm btn-warning px-3 fw-semibold"
                                                 onclick="confirmarEditar({{ $sucursal->idSucursales }}, '{{ addslashes($sucursal->nombreSucursales) }}')"
                                                 title="Editar Cronograma">
                                                 <i class="bi bi-pencil-square me-1"></i>Editar
                                             </button>
+                                            @endcan
                                         </td>
                                     </tr>
                                 @endforeach
